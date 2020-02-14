@@ -1,3 +1,4 @@
+import os
 import re
 import subprocess
 from dataclasses import dataclass
@@ -108,7 +109,9 @@ class CustomCommandProcessor(Processor):
 
     def on_change(self, event):
         cmd = self.kv.get('command')
-        subprocess.run(cmd, shell=True)
+        env = os.environ
+        env.update(self.kv.get('environment', dict()))
+        subprocess.run(cmd, shell=True, env=env)
 
 
 class TestableProcessor(Processor):
