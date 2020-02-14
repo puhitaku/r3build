@@ -1,0 +1,7 @@
+[[rule]]
+  name = "Tests"
+  processor = "custom"
+  only = ["modified"]
+  glob = "./**/*_test.py"
+  command = "pytest"
+
