@@ -145,4 +145,3 @@ def test_regex2(instance, tmp):
 
     write(tmp / 'regex2/exclude/bar.txt')
     assert len(rule.history) == 2
-

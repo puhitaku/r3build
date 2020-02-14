@@ -14,7 +14,7 @@ class ConfigOption(click.types.StringParamType):
     '--config',
     default='r3build.toml',
     help='Configuration file. (default = r3build.toml)',
-    type=ConfigOption()
+    type=ConfigOption(),
 )
 @click.option('-v', '--verbose', is_flag=True)
 def main(config, verbose):
@@ -28,4 +28,3 @@ def main(config, verbose):
 
 
 main()
-

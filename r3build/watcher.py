@@ -9,6 +9,7 @@ from typing import Any, Callable, List, Set
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 
+
 class EventBuffer:
     d: Dict[FileSystemEvent, float]
     mutex: threading.Lock
@@ -86,4 +87,3 @@ class Watcher(FileSystemEventHandler, threading.Thread):
             print(f'Set event: {event}')
 
         self.event_buffer.push(event)
-

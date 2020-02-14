@@ -1,5 +1,6 @@
 from r3build import cli
 
+
 def test_load_rules():
     r1 = {
         'name': 'foo',
@@ -10,4 +11,3 @@ def test_load_rules():
     assert parsed[0].get('name') == 'foo'
     assert parsed[0].tid == '_test'
     assert parsed[0].get('key') == 'value'
-

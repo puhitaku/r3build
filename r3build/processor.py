@@ -57,7 +57,9 @@ class Processor:
             raise RuntimeError(f'Processor {self.tid} lacks mendatory key{s}: {lack}')
 
         if self.verbose:
-            print(f'R3build: detected rule <{self.name}> path={event.src_path}, event={event.event_type}')
+            print(
+                f'R3build: detected rule <{self.name}> path={event.src_path}, event={event.event_type}'
+            )
         self.on_change(event)
 
     def on_change(self, event):
@@ -82,6 +84,7 @@ class Processor:
     def _re_match(pattern):
         return re.compile(pattern).search
 
+
 class MakeProcessor(Processor):
     tid = 'make'
     mendatory_keys = {'file_range', 'target'}
@@ -89,11 +92,13 @@ class MakeProcessor(Processor):
     def on_change(self, event):
         print(f'make: I am going to make {self.kv["target"]} !!')  # FIXME
 
+
 class PytestProcessor(Processor):
     tid = 'pytest'
 
     def on_change(self, event):
         import pytest
+
         pytest.main()
 
 
@@ -122,6 +127,7 @@ class TestableProcessor(Processor):
         self.history.append(event)
         print(f'<{self.name}>  event: {event.event_type}, path: {event.src_path}')
 
+
 p = [
     MakeProcessor,
     PytestProcessor,
@@ -130,4 +136,3 @@ p = [
 ]
 
 available_processors = {t.tid: t for t in p}
-
