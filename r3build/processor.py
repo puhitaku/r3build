@@ -103,8 +103,8 @@ class PytestProcessor(Processor):
         pytest.main()
 
 
-class CustomCommandProcessor(Processor):
-    tid = 'custom'
+class CommandProcessor(Processor):
+    tid = 'command'
     mendatory_keys = {'command'}
 
     def on_change(self, event):
@@ -134,7 +134,7 @@ class TestableProcessor(Processor):
 p = [
     MakeProcessor,
     PytestProcessor,
-    CustomCommandProcessor,
+    CommandProcessor,
     TestableProcessor,
 ]
 
