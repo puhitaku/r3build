@@ -5,6 +5,7 @@
 name = "U-Boot"
 processor = "make"    # make processor
 target = "u-boot.sb"  # make target
+jobs = 8              # 8 jobs to run parallel
 
 regex = '.*\.[ch]$'   # watch .c and .h
 only = "modified"     # trigger only on modify

@@ -91,6 +91,11 @@ target = ""
 # like `ARCH` and `CROSS_COMPILE`.
 environment = {}
 
+# `jobs` (int or "auto"): number of parallel jobs.
+# Equivalent to `make -j` option.
+# Only "auto" is allowed as a str value that means r3build will decide N of jobs with multiprocessing.cpu_count().
+jobs = "auto"
+
 
 # -- CONFIGS FOR `command` PROCESSOR (r3build.processor.CommandProcessor) --
 

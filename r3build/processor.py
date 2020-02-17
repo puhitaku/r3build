@@ -4,6 +4,7 @@ import subprocess
 from dataclasses import dataclass
 from fnmatch import fnmatchcase
 from functools import lru_cache
+from multiprocessing import cpu_count
 from typing import Any, Dict, List, Set
 
 
@@ -82,11 +83,14 @@ class MakeProcessor(Processor):
     tid = 'make'
 
     def on_change(self, event):
-        jobs = self.get('jobs', 0)
-        jobs = '' if not jobs else f'-j{jobs}'
+        jobs = self.get('jobs', 'auto')
+        if jobs == 'auto':
+            jobs = str(cpu_count())
+        else:
+            jobs = str(jobs)
 
         target = self.get('target', '')
-        cmd = f'make {jobs} {target}'.strip()
+        cmd = f'make -j{jobs} {target}'.strip()
 
         env = os.environ
         env.update(self.get('environment', dict()))

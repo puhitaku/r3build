@@ -4,7 +4,7 @@
 [[rule]]
 name = "Linux"
 processor = "make"  # make processor
-#TODO: jobs = 8     # 8 jobs to run parallel
+jobs = 8            # 8 jobs to run parallel
 
 regex = '.*\.[ch]$' # watch .c and .h
 only = "modified"   # trigger only on modify
