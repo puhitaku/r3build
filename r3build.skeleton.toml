@@ -56,7 +56,7 @@ processor = ""
 # Available values are "moved", "deleted", "created", "modified".
 # This values originate from gorakhargosh/watchdog, see below;
 # https://github.com/gorakhargosh/watchdog/blob/master/src/watchdog/events.py#L96-L99
-only = None
+only = ""
 
 # `path` (str): the root directory to watch.
 # Any file events (move, delete, create, modify) inside this directory will be reported to r3build recursively.
@@ -65,28 +65,30 @@ path = "."
 
 # `glob` (array of str, or str): list of glob patterns to match the file path.
 # The rule will be triggered if one of (or more) patterns match to it.
-glob = None
+glob = ""
 
 # `glob_exclude` (array of str, or str): list of glob patterns, to exclude.
 # This has opposite effect of `glob`. The rule won't be triggered if one of (or more) file patterns match to it.
-glob_exclude = None
+glob_exclude = ""
 
 # `regex` (array of str, or str): list of regular expression patterns to match the file path.
 # The rule will be triggered if one of (or more) patterns match to it.
-regex = None
+regex = ""
 
 # `regex_exclude` (array of str, or str): list of regular expression patterns, to exclude.
 # This has opposite effect of `regex`. The rule won't be triggered if one of (or more) file patterns match to it.
-glob_exclude = None
+glob_exclude = ""
 
 
 # -- CONFIGS FOR `make` PROCESSOR (r3build.processor.MakeProcessor) --
 
 # `target` (str): the make target.
-target = "all"
+# Omitting this key will make the processor call `make` with no arguments.
+target = ""
 
 # `environment` (table of str and str): additional environment variable.
-# Basically, r3build inherits the parent's envs. This table is for passing specific envs to make command.
+# Basically, r3build inherits the parent's envs. This table is for passing specific envs to make command
+# like `ARCH` and `CROSS_COMPILE`.
 environment = {}
 
 
@@ -97,6 +99,6 @@ environment = {}
 command = ""
 
 # `environment` (table of str and str): additional environment variable.
-# Basically, r3build inherits the parent's envs. This table is for passing specific envs to make command.
+# Basically, r3build inherits the parent's envs. This table is for passing specific envs to the command.
 environment = {}
 
