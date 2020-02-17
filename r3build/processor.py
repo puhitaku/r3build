@@ -21,16 +21,13 @@ class Processor:
         self.kv = dict()
         self.verbose = False
 
-    def _is_sufficient(self):
-        return self.mendatory_keys.issubset(set(self.kv.keys()))
-
     def get(self, key, default=None):
         return self.kv.get(key, default)
 
     def set(self, key, value):
         self.kv[key] = value
 
-    def invoke(self, event):
+    def dispatch(self, event):
         for k, v in self.kv.items():
             if k == 'glob' and not self._filter_glob(v, event):
                 return
@@ -57,6 +54,9 @@ class Processor:
 
     def on_change(self, event):
         raise NotImplementedError
+
+    def _is_sufficient(self):
+        return self.mendatory_keys.issubset(set(self.kv.keys()))
 
     def _filter_glob(self, pattern, event):
         if isinstance(pattern, list):

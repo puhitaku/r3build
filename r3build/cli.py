@@ -47,19 +47,19 @@ class R3build:
         self.watcher = watcher.Watcher()
         self.rules = load_rules(self.config.get('rule', []), verbose)
 
-    def _invoke(self, event):
+    def run(self):
         for rule in self.rules:
-            rule.invoke(event)
+            self.watcher.add_path(rule.get('path', '.'))
+
+        def _invoke(event):
+            for rule in self.rules:
+                rule.dispatch(event)
+
+        self.watcher.set_callback(_invoke)
+        self.watcher.start()
 
     def get_rule(self, name):
         for rule in self.rules:
             if rule.name == name:
                 return rule
         return None
-
-    def run(self):
-        for rule in self.rules:
-            self.watcher.add_path(rule.get('path', '.'))
-
-        self.watcher.set_callback(self._invoke)
-        self.watcher.start()
