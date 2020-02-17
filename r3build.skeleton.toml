@@ -1,0 +1,102 @@
+# This file shows the skeleton of r3build.toml.
+# It is structured with a bunch of sections that contain multiple keys and values.
+
+# Values in this file are the default value of corresponding keys.
+
+
+[log]
+# The `log` section defines how verbose the logs should be.
+# Verbosity can be adjusted from completely quiet to super verbose.
+
+# TODO
+# `all` (bool): turn on all event logs
+# Notice: it overrides all other log flags.
+all = false
+
+# TODO
+# `accepted_events` (bool): show events that pass all filters
+accepted_events = true
+
+# TODO
+# `ignored_events` (bool): show events that didn't pass one or more filters
+ignored_events = false
+
+# TODO
+# `rate_limited_events` (bool): show rate-limited events
+# Hint: rate-limit duration is set by `events.rate_limit_duration`.
+rate_limited_events = false
+
+# TODO
+# `processor_output` (bool): output of an activated processor
+processor_output = true
+
+# TODO
+# `time` (bool): show targets' execution duration
+time = false
+
+
+[[rule]]
+# The `rule` section is an array of rules.
+# We recommend you to use "double bracketed table" syntax to describe them.
+
+# -- COMMON CONFIGS AMONG ALL PROCESSORS --
+# Here we are going to describe common configurations.
+# See the following sections for processor-specific configurations.
+
+# `name` (str): human-readable name of the rule
+# It exists only for convenience in logging for now.
+name = "noname"
+
+# `processor` (str) *MENDATORY*: the ID of "processor"
+# To see the full list of processors, run `python -m r3build --processors`.
+processor = ""
+
+# `only` (array of str, or str): list of kinds of events to trigger.
+# Omitting this key allows this rule to accept all events.
+# Available values are "moved", "deleted", "created", "modified".
+# This values originate from gorakhargosh/watchdog, see below;
+# https://github.com/gorakhargosh/watchdog/blob/master/src/watchdog/events.py#L96-L99
+only = None
+
+# `path` (str): the root directory to watch.
+# Any file events (move, delete, create, modify) inside this directory will be reported to r3build recursively.
+# This falls back to "." (pwd) if it's not specified.
+path = "."
+
+# `glob` (array of str, or str): list of glob patterns to match the file path.
+# The rule will be triggered if one of (or more) patterns match to it.
+glob = None
+
+# `glob_exclude` (array of str, or str): list of glob patterns, to exclude.
+# This has opposite effect of `glob`. The rule won't be triggered if one of (or more) file patterns match to it.
+glob_exclude = None
+
+# `regex` (array of str, or str): list of regular expression patterns to match the file path.
+# The rule will be triggered if one of (or more) patterns match to it.
+regex = None
+
+# `regex_exclude` (array of str, or str): list of regular expression patterns, to exclude.
+# This has opposite effect of `regex`. The rule won't be triggered if one of (or more) file patterns match to it.
+glob_exclude = None
+
+
+# -- CONFIGS FOR `make` PROCESSOR (r3build.processor.MakeProcessor) --
+
+# `target` (str): the make target.
+target = "all"
+
+# `environment` (table of str and str): additional environment variable.
+# Basically, r3build inherits the parent's envs. This table is for passing specific envs to make command.
+environment = {}
+
+
+# -- CONFIGS FOR `command` PROCESSOR (r3build.processor.CommandProcessor) --
+
+# `command` (str) *MENDATORY*: the command to run.
+# This command will be executed by `subprocess.run` with `shell=True`.
+command = ""
+
+# `environment` (table of str and str): additional environment variable.
+# Basically, r3build inherits the parent's envs. This table is for passing specific envs to make command.
+environment = {}
+
