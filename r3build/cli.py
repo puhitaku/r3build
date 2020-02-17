@@ -32,13 +32,28 @@ def load_rules(rules, verbose):
 
 
 class R3build:
+    """The core implementation of r3build.
+
+    It parepares a watcher, rules and processors as described in the config
+    from a TOML or a dict.
+
+    Preparation is finished in the __init__ and user has to call run() to
+    get it working. R3build class handles filesystem events asynchronously;
+    they are reported via a callback.
+
+    Reported events are "cleansed" in the outer watcher.
+    For the implementation of it, please refer to r3build.watcher.Watcher.
+    """
+
     watcher: watcher.Watcher
     rules: List[Processor]
 
     def __init__(self, config_fn=None, config_dict=None, verbose=False):
+        # Load the config from toml
         if config_fn:
             with open(config_fn) as raw:
                 self.config = toml.load(raw)
+        # Or from prepared dict
         elif config_dict:
             self.config = config_dict
         else:
@@ -48,14 +63,18 @@ class R3build:
         self.rules = load_rules(self.config.get('rule', []), verbose)
 
     def run(self):
-        for rule in self.rules:
-            self.watcher.add_path(rule.get('path', '.'))
+        # Register paths to watch
+        paths = {rule.get('path', '.') for rule in self.rules}
+        for path in paths:
+            self.watcher.add_path(path)
 
+        # Callback for filesystem events
         def _invoke(event):
             for rule in self.rules:
                 rule.dispatch(event)
 
-        self.watcher.set_callback(_invoke)
+        # Register callback and start asynchronous watcher
+        self.watcher.callback = _invoke
         self.watcher.start()
 
     def get_rule(self, name):
