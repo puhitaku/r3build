@@ -1,6 +1,6 @@
 [[rule]]
   name = "Tests"
-  processor = "custom"
+  processor = "command"
   only = ["modified"]
   glob = "./**/*.py"
   command = "pytest"
