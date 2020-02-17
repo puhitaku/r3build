@@ -88,10 +88,9 @@ class Processor:
 
 class MakeProcessor(Processor):
     tid = 'make'
-    mendatory_keys = {'target'}
 
     def on_change(self, event):
-        target = self.kv.get('target')
+        target = self.kv.get('target', 'all')
         env = os.environ
         env.update(self.kv.get('environment', dict()))
         subprocess.run('make ' + target, shell=True, env=env)
