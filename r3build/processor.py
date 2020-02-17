@@ -98,6 +98,14 @@ class MakeProcessor(Processor):
 
 
 class PytestProcessor(Processor):
+    # RECOMMEND: use `CommandProcessor` to run pytest.
+    # FIXME: this processor looks like working but it does not
+    #        affect the change of code that are being tested.
+    #        We have to find how to identify what's being tested in runtime and
+    #        its module name to commence re-import and remove side-effect.
+    #        This means it's totally unusable in the field that r3build
+    #        focuses into -- doing re-builds and re-tests.
+    #        We won't deprecate it for now, but it won't be enabled until this issue is solved.
     tid = 'pytest'
 
     def on_change(self, event):
@@ -136,7 +144,7 @@ class TestableProcessor(Processor):
 
 p = [
     MakeProcessor,
-    PytestProcessor,
+    # PytestProcessor,
     CommandProcessor,
     TestableProcessor,
 ]
