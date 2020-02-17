@@ -88,10 +88,13 @@ class Processor:
 
 class MakeProcessor(Processor):
     tid = 'make'
-    mendatory_keys = {'file_range', 'target'}
+    mendatory_keys = {'target'}
 
     def on_change(self, event):
-        print(f'make: I am going to make {self.kv["target"]} !!')  # FIXME
+        target = self.kv.get('target')
+        env = os.environ
+        env.update(self.kv.get('environment', dict()))
+        subprocess.run('make ' + target, shell=True, env=env)
 
 
 class PytestProcessor(Processor):
