@@ -13,7 +13,7 @@ class Processor:
     kv: Dict[str, Any]
     verbose: bool
 
-    _name: str
+    name: str
 
     def __init__(self):
         self.name = 'noname'
@@ -23,14 +23,6 @@ class Processor:
 
     def _is_sufficient(self):
         return self.mendatory_keys.issubset(set(self.kv.keys()))
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, name):
-        self._name = name
 
     def get(self, key, default=None):
         return self.kv.get(key, default)
