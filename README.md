@@ -26,10 +26,12 @@ name = "Build them all"
 processor = "make"
 only = ["modified"]
 glob = ["*.c", "*.h"]
-glob_exclude = "*~"
+glob_exclude = ["extra/*", "extra/**/*"]
 ```
 
-Not using `make`? Okay, here's a yet another general one.
+This means that "when .c or .h files are modified, run `make`, but ignore all files in `extra` directory."
+
+Here's a yet another general one for who is not using `make`.
 
 ```
 $ cat r3build.toml
@@ -39,8 +41,9 @@ processor = "command"
 command = "python -m foobar"
 only = ["modified"]
 glob = ["./foobar/*.py", "./foobar/**/*.py"]
-glob_exclude = "*~"
 ```
+
+This means that "when Python code in `foobar` package is edited, run `__main__.py` in the package."
 
 2. Invoke r3build. This watches what you edit.
 
@@ -48,7 +51,7 @@ glob_exclude = "*~"
 $ python -m r3build
 ```
 
-3. Edit your codes as you want, and enjoy them being built / run automatically.
+3. Edit your code as you want, and enjoy them being built / run automatically.
 
 
 How to use (verbose version)
@@ -59,7 +62,7 @@ Other than that, it also defines all behavior of r3build, like, how it outputs t
 
 Let's write your `r3build.toml` and place it into your project. It's good to put it in the root directory.
 
-[The skeleton (template)](r3build.skeleton.toml) is placed in the root of this repository.
+Please refer to [the skeleton (template)](r3build.skeleton.toml) placed in the root of this repository.
 
 Here's an example of `r3build.toml` to run `make` every time you edit your C code:
 
@@ -69,8 +72,10 @@ name = "Build them all"
 processor = "make"
 ```
 
-It's enough to watch your codes. But it'll be so annoying to you because it'll run make for ALL events
-that occur to your codes -- when they are "created", "deleted", "moved" and "modified."
+The `[[rule]]` line means that it's an item in `rule` array. The `name` config means that the name of this `rule` is "Build them all". The last `processor` config means that `make` processor will be invoked when this `rule` gets triggered. `Processor` does not mean a shell command but a purpose-specific implementations for several types of build targets.
+
+It's enough to get r3build watch your code. But it'll be annoying to you because it'll run `make` for ALL events
+that occur to your code -- when they are "created", "deleted", "moved" and "modified."
 
 Here's an additional one to "filter" the events; the `only` key.
 
@@ -81,11 +86,11 @@ processor = "make"
 only = ["modified"]
 ```
 
-As a result, the rule will only be triggered when your codes are being edit (modified).
+As a result, the rule will only be triggered when your code is being edit (modified).
 See [the skeleton](r3build.skeleton.toml) for the available values.
 
-You'll notice that it triggers not only for `.c` and `.h` codes but all files.
-It's super-easy to filter them only for `.c` and `.h` codes. Here's how:
+You'll notice that it triggers not only for `.c` and `.h` but all files.
+It's super-easy to filter them only for `.c` and `.h` code. Here's how:
 
 ```
 [[rule]]
@@ -96,7 +101,7 @@ glob = ["*.c", "*.h"]
 ```
 
 You would already understood the most part of `r3build.toml`.
-Here's one more to good to know. "Exclude" keys.
+Here's one more thing to good to know. "Exclude" keys.
 
 ```
 [[rule]]
@@ -104,10 +109,10 @@ name = "Build them all"
 processor = "make"
 only = ["modified"]
 glob = ["*.c", "*.h"]
-glob_exclude = "*~"
+glob_exclude = ["extra/*", "extra/**/*"]
 ```
 
-`*~` stands for the tilde files that Vim creates on saving.
+The `glob_exclude` configuration will ignore the changes occurred in `extra` directory.
 
 For other processors and configurations, see [r3build.skeleton.toml](r3build.skeleton.toml) (and the code of course :wink:)
 
