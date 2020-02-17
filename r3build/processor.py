@@ -82,10 +82,16 @@ class MakeProcessor(Processor):
     tid = 'make'
 
     def on_change(self, event):
-        target = self.kv.get('target', 'all')
+        jobs = self.get('jobs', 0)
+        jobs = '' if not jobs else f'-j{jobs}'
+
+        target = self.get('target', '')
+        cmd = f'make {jobs} {target}'.strip()
+
         env = os.environ
-        env.update(self.kv.get('environment', dict()))
-        subprocess.run('make ' + target, shell=True, env=env)
+        env.update(self.get('environment', dict()))
+
+        subprocess.run(cmd, shell=True, env=env)
 
 
 class PytestProcessor(Processor):
@@ -110,9 +116,9 @@ class CommandProcessor(Processor):
     mendatory_keys = {'command'}
 
     def on_change(self, event):
-        cmd = self.kv.get('command')
+        cmd = self.get('command')
         env = os.environ
-        env.update(self.kv.get('environment', dict()))
+        env.update(self.get('environment', dict()))
         subprocess.run(cmd, shell=True, env=env)
 
 
