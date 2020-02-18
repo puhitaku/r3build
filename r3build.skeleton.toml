@@ -8,31 +8,34 @@
 # The `log` section defines how verbose the logs should be.
 # Verbosity can be adjusted from completely quiet to super verbose.
 
-# TODO
-# `all` (bool): turn on all event logs
+# `all` (bool): turn on all event logs.
 # Notice: it overrides all other log flags.
 all = false
 
-# TODO
-# `accepted_events` (bool): show events that pass all filters
+# `accepted_events` (bool): show all incoming events except rate-limited ones.
 accepted_events = true
 
-# TODO
-# `ignored_events` (bool): show events that didn't pass one or more filters
+# `ignored_events` (bool): show rate-limited events. Only for debug purpose.
 ignored_events = false
 
-# TODO
-# `rate_limited_events` (bool): show rate-limited events
-# Hint: rate-limit duration is set by `events.rate_limit_duration`.
+# `rate_limited_events` (bool): show rate-limited events.
+# Hint: rate-limit duration is set by `event.rate_limit_duration`.
 rate_limited_events = false
 
-# TODO
 # `processor_output` (bool): output of an activated processor
 processor_output = true
 
 # TODO
 # `time` (bool): show targets' execution duration
 time = false
+
+
+[event]
+# The `event` section is for adjusting event handling.
+
+# `rate_limit_duration` (float): duration for detecting duplicated events (seconds).
+# Do not make it longer unless you experience unwanted duplications.
+rate_limit_duration = 0.01
 
 
 [[rule]]
@@ -43,11 +46,11 @@ time = false
 # Here we are going to describe common configurations.
 # See the following sections for processor-specific configurations.
 
-# `name` (str): human-readable name of the rule
+# `name` (str): human-readable name of the rule.
 # It exists only for convenience in logging for now.
 name = "noname"
 
-# `processor` (str) *MENDATORY*: the ID of "processor"
+# `processor` (str) *MENDATORY*: the ID of "processor".
 # To see the full list of processors, run `python -m r3build --processors`.
 processor = ""
 

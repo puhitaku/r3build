@@ -102,7 +102,7 @@ class Watcher(FileSystemEventHandler, threading.Thread):
         while True:
             for event, timestamp in self.event_buffer.items():
                 elapsed = datetime.now().timestamp() - timestamp
-                if elapsed <= 0.01:
+                if elapsed <= self.config.event.rate_limit_duration:
                     continue
                 self.event_buffer.pop(event)
                 self._callback(event)
@@ -116,11 +116,11 @@ class Watcher(FileSystemEventHandler, threading.Thread):
         If there is an identical event in buffer, it's ignored.
         """
         if event in self.event_buffer.events():
-            if self.config.log.ignored_events:
-                print(f'Ign event: {event}')
+            if self.config.log.rate_limited_events:
+                print(f'Rate-limited event: {event}')
             return
         if self.config.log.accepted_events:
-            print(f'Set event: {event}')
+            print(f'Accepted event: {event}')
 
         self.event_buffer.push(event)
 

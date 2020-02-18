@@ -15,11 +15,11 @@ class Processor:
 
     name: str = 'noname'
     kv: Dict[str, Any]
-    verbose: bool  # TODO: replace verbose flag with Config.log options
+    root_config: object  # r3build.config.Config
 
-    def __init__(self):
+    def __init__(self, root_config):
         self.kv = dict()
-        self.verbose = False
+        self.root_config = root_config
 
     def get(self, key, default=None):
         return self.kv.get(key, default)
@@ -30,14 +30,19 @@ class Processor:
     def dispatch(self, event):
         for k, v in self.kv.items():
             if k == 'glob' and not self._filter_glob(v, event):
+                self._log_filtered_event(event)
                 return
             elif k == 'glob_exclude' and self._filter_glob(v, event):
+                self._log_filtered_event(event)
                 return
             elif k == 'regex' and not self._filter_regex(v, event):
+                self._log_filtered_event(event)
                 return
             elif k == 'regex_exclude' and self._filter_regex(v, event):
+                self._log_filtered_event(event)
                 return
             elif k == 'only' and not self._filter_only(v, event):
+                self._log_filtered_event(event)
                 return
 
         if not self._is_sufficient():
@@ -46,7 +51,7 @@ class Processor:
             s = 's' if len(lack) > 1 else ''
             raise RuntimeError(f'Processor {self.id} lacks mendatory key{s}: {lack}')
 
-        if self.verbose:
+        if self.root_config.log.dispatched_events:
             print(
                 f'R3build: detected rule <{self.name}> path={event.src_path}, event={event.event_type}'
             )
@@ -72,6 +77,10 @@ class Processor:
             return any(o == event.event_type for o in only)
         return only == event.event_type
 
+    def _log_filtered_event(self, event):
+        if self.root_config.log.filtered_events:
+            print(f'Filtered event: {event}')
+
     @staticmethod
     @lru_cache(typed=True)
     def _re_match(pattern):
@@ -95,7 +104,11 @@ class MakeProcessor(Processor):
         env = os.environ
         env.update(self.get('environment', dict()))
 
-        subprocess.run(cmd, shell=True, env=env)
+        kwargs = dict()
+        if not self.root_config.log.processor_output:
+            kwargs = {'stdout': subprocess.DEVNULL, 'stderr': subprocess.DEVNULL}
+
+        subprocess.run(cmd, shell=True, env=env, **kwargs)
 
 
 class PytestProcessor(Processor):
@@ -124,15 +137,20 @@ class CommandProcessor(Processor):
         cmd = self.get('command')
         env = os.environ
         env.update(self.get('environment', dict()))
-        subprocess.run(cmd, shell=True, env=env)
+
+        kwargs = dict()
+        if not self.root_config.log.processor_output:
+            kwargs = {'stdout': subprocess.DEVNULL, 'stderr': subprocess.DEVNULL}
+
+        subprocess.run(cmd, shell=True, env=env, **kwargs)
 
 
 class TestableProcessor(Processor):
     id = '_test'
     history = None
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config):
+        super().__init__(config)
         self.history = []
 
     def clear_history(self):
