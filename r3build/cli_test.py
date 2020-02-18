@@ -1,13 +1,16 @@
-from r3build import cli
+from r3build.cli import R3build
 
 
 def test_load_rules():
-    r1 = {
-        'name': 'foo',
-        'processor': '_test',
-        'key': 'value',
+    d = {
+        'rule': [
+            {
+                'name': 'foo',
+                'processor': '_test',
+            },
+        ],
     }
-    parsed = cli.load_rules([r1], False)
-    assert parsed[0].get('name') == 'foo'
-    assert parsed[0].tid == '_test'
-    assert parsed[0].get('key') == 'value'
+    r3 = R3build(config_dict=d)
+    assert r3.get_rule('foo') is not None
+    assert r3.get_rule('foo').name == 'foo'
+    assert r3.get_rule('foo').processor.id == '_test'

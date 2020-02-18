@@ -54,15 +54,19 @@ class Watcher(FileSystemEventHandler, threading.Thread):
     We are looking forward to refactor it.
     """
 
+    config: dict
+
     observer: Observer
     has_path: bool
     event_buffer: EventBuffer
     verbose: bool
     _callback: Callable[[FileSystemEvent], None]
 
-    def __init__(self):
+    def __init__(self, config=None):
         FileSystemEventHandler.__init__(self)
         threading.Thread.__init__(self, daemon=True)
+
+        self.config = config if config else dict()
         self.observer = Observer()
         self.has_path = False
         self.event_buffer = EventBuffer()
@@ -119,3 +123,4 @@ class Watcher(FileSystemEventHandler, threading.Thread):
             print(f'Set event: {event}')
 
         self.event_buffer.push(event)
+

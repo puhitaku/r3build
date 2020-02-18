@@ -9,16 +9,15 @@ from typing import Any, Dict, List, Set
 
 
 class Processor:
-    tid: str
-    mendatory_keys: Set[str]
-    kv: Dict[str, Any]
-    verbose: bool
+    id: str
+    mendatory_keys: Set[str] = set()
+    additional_keys: Set[str] = set()
 
-    name: str
+    name: str = 'noname'
+    kv: Dict[str, Any]
+    verbose: bool  # TODO: replace verbose flag with Config.log options
 
     def __init__(self):
-        self.name = 'noname'
-        self.mendatory_keys = set()
         self.kv = dict()
         self.verbose = False
 
@@ -45,7 +44,7 @@ class Processor:
             lack = self.mendatory_keys - set(self.kv.keys())
             lack = ', '.join(lack)
             s = 's' if len(lack) > 1 else ''
-            raise RuntimeError(f'Processor {self.tid} lacks mendatory key{s}: {lack}')
+            raise RuntimeError(f'Processor {self.id} lacks mendatory key{s}: {lack}')
 
         if self.verbose:
             print(
@@ -80,7 +79,8 @@ class Processor:
 
 
 class MakeProcessor(Processor):
-    tid = 'make'
+    id = 'make'
+    additional_keys = {'target', 'environment', 'jobs'}
 
     def on_change(self, event):
         jobs = self.get('jobs', 'auto')
@@ -107,7 +107,7 @@ class PytestProcessor(Processor):
     #        This means it's totally unusable in the field that r3build
     #        focuses into -- doing re-builds and re-tests.
     #        We won't deprecate it for now, but it won't be enabled until this issue is solved.
-    tid = 'pytest'
+    id = 'pytest'
 
     def on_change(self, event):
         import pytest
@@ -116,8 +116,9 @@ class PytestProcessor(Processor):
 
 
 class CommandProcessor(Processor):
-    tid = 'command'
+    id = 'command'
     mendatory_keys = {'command'}
+    additional_keys = {'environment'}
 
     def on_change(self, event):
         cmd = self.get('command')
@@ -127,8 +128,7 @@ class CommandProcessor(Processor):
 
 
 class TestableProcessor(Processor):
-    tid = '_test'
-    mendatory_keys = set()
+    id = '_test'
     history = None
 
     def __init__(self):
@@ -150,4 +150,4 @@ p = [
     TestableProcessor,
 ]
 
-available_processors = {t.tid: t for t in p}
+available_processors = {t.id: t for t in p}
