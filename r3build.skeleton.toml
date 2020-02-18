@@ -28,6 +28,9 @@ dispatched_events = false
 # `processor_output` (bool): output of an activated processor
 processor_output = true
 
+# `result` (bool): show if the run was successful or not.
+result = true
+
 # TODO
 # `time` (bool): show targets' execution duration
 time = false

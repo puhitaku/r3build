@@ -74,13 +74,23 @@ class Target:
                 return
 
         if self._root_config.log.dispatched_events:
-            print(f'>> R3BUILD >> detected a change for target "{self.name}" >>\n')
+            print(f'\n >> R3BUILD >> detected a change for target "{self.name}" >>\n')
 
         lacks = self.processor.mendatory_keys - set(self._target_config.keys())
         if len(lacks) >= 1:
             human = ', '.join(sorted(list(lacks)))
             raise RuntimeError(f'Target <{self.name}> lacks mendatory keys: {human}')
-        self.processor.on_change(self._target_config, event)
+
+        result = self.processor.on_change(self._target_config, event)
+
+        if not self._root_config.log.result:
+            return
+
+        if result:
+            # Success
+            print(f'\n >> R3BUILD >> target "{self.name}" have SUCCEEDED >>\n')
+        else:
+            print(f'\n >> R3BUILD >> target "{self.name}" have FAILED >>\n')
 
     """Utilities"""
 
@@ -129,6 +139,7 @@ class Config:
             filtered_events = log.get('filtered_events', False) or enable_all
             dispatched_events = log.get('dispatched_events', False) or enable_all
             processor_output = log.get('processor_output', True) or enable_all
+            result = log.get('result', True) or enable_all
             time = log.get('time', False) or enable_all
 
         self.log = Log()

@@ -41,7 +41,8 @@ class MakeProcessor(Processor):
         if not self.root_config.log.processor_output:
             kwargs = {'stdout': subprocess.DEVNULL, 'stderr': subprocess.DEVNULL}
 
-        subprocess.run(cmd, shell=True, env=env, **kwargs)
+        result = subprocess.run(cmd, shell=True, env=env, **kwargs)
+        return result.returncode == 0
 
 
 class PytestProcessor(Processor):
@@ -55,9 +56,8 @@ class PytestProcessor(Processor):
     #        We won't deprecate it for now, but it won't be enabled until this issue is solved.
     id = 'pytest'
 
-    def on_change(self, event):
+    def on_change(self, config, event):
         import pytest
-
         pytest.main()
 
 
@@ -75,7 +75,8 @@ class CommandProcessor(Processor):
         if not self.root_config.log.processor_output:
             kwargs = {'stdout': subprocess.DEVNULL, 'stderr': subprocess.DEVNULL}
 
-        subprocess.run(cmd, shell=True, env=env, **kwargs)
+        result = subprocess.run(cmd, shell=True, env=env, **kwargs)
+        return result.returncode == 0
 
 
 class TestableProcessor(Processor):
@@ -93,6 +94,7 @@ class TestableProcessor(Processor):
         self.history.append(event)
         name = config.get('name', 'noname')
         print(f'<{name}>  event: {event.event_type}, path: {event.src_path}')
+        return True
 
 
 p = [
