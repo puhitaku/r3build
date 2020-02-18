@@ -109,6 +109,7 @@ jobs = "auto"
 
 # `command` (str) *MENDATORY*: the command to run.
 # This command will be executed by `subprocess.run` with `shell=True`.
+# TODO: support template to pass filename and more
 command = ""
 
 # `environment` (table of str and str): additional environment variable.
