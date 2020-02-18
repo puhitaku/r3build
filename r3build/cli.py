@@ -36,7 +36,8 @@ class R3build:
         else:
             raise RuntimeError('Specify config file or config dict')
 
-        self.watcher = watcher.Watcher()
+        self.config.log.all |= verbose
+        self.watcher = watcher.Watcher(self.config)
 
     def run(self):
         # Register paths to watch

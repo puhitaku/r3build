@@ -9,6 +9,8 @@ from typing import Any, Callable, List, Set
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 
+from r3build.config import Config
+
 
 class EventBuffer:
     """Thread-safe event buffer.
@@ -54,23 +56,21 @@ class Watcher(FileSystemEventHandler, threading.Thread):
     We are looking forward to refactor it.
     """
 
-    config: dict
+    config: Config
 
     observer: Observer
     has_path: bool
     event_buffer: EventBuffer
-    verbose: bool
     _callback: Callable[[FileSystemEvent], None]
 
-    def __init__(self, config=None):
+    def __init__(self, config):
         FileSystemEventHandler.__init__(self)
         threading.Thread.__init__(self, daemon=True)
 
-        self.config = config if config else dict()
+        self.config = config
         self.observer = Observer()
         self.has_path = False
         self.event_buffer = EventBuffer()
-        self.verbose = False
         self._callback = None
 
     def add_path(self, path):
@@ -116,10 +116,10 @@ class Watcher(FileSystemEventHandler, threading.Thread):
         If there is an identical event in buffer, it's ignored.
         """
         if event in self.event_buffer.events():
-            if self.verbose:
+            if self.config.log.ignored_events:
                 print(f'Ign event: {event}')
             return
-        if self.verbose:
+        if self.config.log.accepted_events:
             print(f'Set event: {event}')
 
         self.event_buffer.push(event)
