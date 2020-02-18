@@ -61,6 +61,7 @@ class Watcher(FileSystemEventHandler, threading.Thread):
     _callback: Callable[[FileSystemEvent], None]
 
     def __init__(self):
+        FileSystemEventHandler.__init__(self)
         threading.Thread.__init__(self, daemon=True)
         self.observer = Observer()
         self.has_path = False
