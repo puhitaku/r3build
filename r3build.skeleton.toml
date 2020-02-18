@@ -77,7 +77,7 @@ regex = ""
 
 # `regex_exclude` (array of str, or str): list of regular expression patterns, to exclude.
 # This has opposite effect of `regex`. The rule won't be triggered if one of (or more) file patterns match to it.
-glob_exclude = ""
+regex_exclude = ""
 
 
 # -- CONFIGS FOR `make` PROCESSOR (r3build.processor.MakeProcessor) --
