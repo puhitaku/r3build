@@ -5,11 +5,11 @@ from functools import lru_cache
 from r3build.processor import Processor, available_processors
 
 
-class Rule:
-    def __init__(self, root_config, rule_config):
-        pid = rule_config.get('processor', None)
+class Target:
+    def __init__(self, root_config, target_config):
+        pid = target_config.get('processor', None)
         if pid is None:
-            raise RuntimeError('Specify a processor in the rule')
+            raise RuntimeError('Specify a processor in the target')
 
         p = available_processors.get(pid, None)
         if p is None:
@@ -17,13 +17,13 @@ class Rule:
 
         self._processor = p(root_config)
         self._root_config = root_config
-        self._rule_config = rule_config
+        self._target_config = target_config
 
-    """Common rule properties"""
+    """Common target properties"""
 
     @property
     def name(self):
-        return self._rule_config.get('name', 'noname')
+        return self._target_config.get('name', 'noname')
 
     @property
     def processor(self):
@@ -31,32 +31,32 @@ class Rule:
 
     @property
     def only(self):
-        return self._rule_config.get('only', "")
+        return self._target_config.get('only', "")
 
     @property
     def path(self):
-        return self._rule_config.get('path', '.')
+        return self._target_config.get('path', '.')
 
     @property
     def glob(self):
-        return self._rule_config.get('glob', "")
+        return self._target_config.get('glob', "")
 
     @property
     def glob_exclude(self):
-        return self._rule_config.get('glob_exclude', "")
+        return self._target_config.get('glob_exclude', "")
 
     @property
     def regex(self):
-        return self._rule_config.get('regex', "")
+        return self._target_config.get('regex', "")
 
     @property
     def regex_exclude(self):
-        return self._rule_config.get('regex_exclude', "")
+        return self._target_config.get('regex_exclude', "")
 
     """Event dispatch function called from main loop"""
 
     def dispatch(self, event):
-        for k, v in self._rule_config.items():
+        for k, v in self._target_config.items():
             if k == 'glob' and not self._filter_glob(v, event):
                 self._log_filtered_event(event)
                 return
@@ -74,13 +74,13 @@ class Rule:
                 return
 
         if self._root_config.log.dispatched_events:
-            print(f'>> R3BUILD >> detected a change for rule "{self.name}" >>\n')
+            print(f'>> R3BUILD >> detected a change for target "{self.name}" >>\n')
 
-        lacks = self.processor.mendatory_keys - set(self._rule_config.keys())
+        lacks = self.processor.mendatory_keys - set(self._target_config.keys())
         if len(lacks) >= 1:
             human = ', '.join(sorted(list(lacks)))
-            raise RuntimeError(f'Rule <{self.name}> lacks mendatory keys: {human}')
-        self.processor.on_change(self._rule_config, event)
+            raise RuntimeError(f'Target <{self.name}> lacks mendatory keys: {human}')
+        self.processor.on_change(self._target_config, event)
 
     """Utilities"""
 
@@ -111,7 +111,7 @@ class Rule:
 class Config:
     log: object
     event: object
-    rule: list
+    target: list
 
     _raw_dict: dict
 
@@ -141,6 +141,6 @@ class Config:
 
         self.event = Event()
 
-        # Load Config.rule
-        rule = raw_dict.get('rule', [])
-        self.rule = [Rule(self, r) for r in rule]
+        # Load Config.target
+        target = raw_dict.get('target', [])
+        self.target = [Target(self, r) for r in target]

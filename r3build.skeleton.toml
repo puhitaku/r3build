@@ -41,15 +41,15 @@ time = false
 rate_limit_duration = 0.01
 
 
-[[rule]]
-# The `rule` section is an array of rules.
+[[target]]
+# The `target` section is an array of targets.
 # We recommend you to use "double bracketed table" syntax to describe them.
 
 # -- COMMON CONFIGS AMONG ALL PROCESSORS --
 # Here we are going to describe common configurations.
 # See the following sections for processor-specific configurations.
 
-# `name` (str): human-readable name of the rule.
+# `name` (str): human-readable name of the target.
 # It exists only for convenience in logging for now.
 name = "noname"
 
@@ -58,7 +58,7 @@ name = "noname"
 processor = ""
 
 # `only` (array of str, or str): list of kinds of events to trigger.
-# Omitting this key allows this rule to accept all events.
+# Omitting this key allows this target to accept all events.
 # Available values are "moved", "deleted", "created", "modified".
 # This values originate from gorakhargosh/watchdog, see below;
 # https://github.com/gorakhargosh/watchdog/blob/master/src/watchdog/events.py#L96-L99
@@ -70,19 +70,19 @@ only = ""
 path = "."
 
 # `glob` (array of str, or str): list of glob patterns to match the file path.
-# The rule will be triggered if one of (or more) patterns match to it.
+# The target will be triggered if one of (or more) patterns match to it.
 glob = ""
 
 # `glob_exclude` (array of str, or str): list of glob patterns, to exclude.
-# This has opposite effect of `glob`. The rule won't be triggered if one of (or more) file patterns match to it.
+# This has opposite effect of `glob`. The target won't be triggered if one of (or more) file patterns match to it.
 glob_exclude = ""
 
 # `regex` (array of str, or str): list of regular expression patterns to match the file path.
-# The rule will be triggered if one of (or more) patterns match to it.
+# The target will be triggered if one of (or more) patterns match to it.
 regex = ""
 
 # `regex_exclude` (array of str, or str): list of regular expression patterns, to exclude.
-# This has opposite effect of `regex`. The rule won't be triggered if one of (or more) file patterns match to it.
+# This has opposite effect of `regex`. The target won't be triggered if one of (or more) file patterns match to it.
 regex_exclude = ""
 
 

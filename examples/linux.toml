@@ -1,7 +1,7 @@
 # Example: Linux kernel for NXP (formerly Freescale) i.MX28 SoCs w/ cross compile
 # Useful for hacking Linux kernel.
 
-[[rule]]
+[[target]]
 name = "Linux"
 processor = "make"  # make processor
 jobs = 8            # 8 jobs to run parallel
@@ -14,6 +14,6 @@ environment.CROSS_COMPILE = "arm-linux-gnueabi-"
 
 # Alternative way:
 #
-# [rule.environment]
+# [target.environment]
 # ARCH = "arm"
 # CROSS_COMPILE = "arm-linux-gnueabi-"

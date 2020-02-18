@@ -1,7 +1,7 @@
 [log]
   dispatched_events = true
 
-[[rule]]
+[[target]]
   name = "Tests"
   processor = "command"
   command = "pytest"

@@ -1,11 +1,11 @@
 from r3build.cli import R3build
 
 
-def test_load_rules():
+def test_load_targets():
     d = {
-        'rule': [{'name': 'foo', 'processor': '_test',},],
+        'target': [{'name': 'foo', 'processor': '_test',},],
     }
     r3 = R3build(config_dict=d)
-    assert r3.get_rule('foo') is not None
-    assert r3.get_rule('foo').name == 'foo'
-    assert r3.get_rule('foo').processor.id == '_test'
+    assert r3.get_target('foo') is not None
+    assert r3.get_target('foo').name == 'foo'
+    assert r3.get_target('foo').processor.id == '_test'

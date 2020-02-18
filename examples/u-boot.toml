@@ -1,7 +1,7 @@
 # Example: U-Boot for NXP (formerly Freescale) i.MX28 SoCs w/ cross compile
 # Useful for hacking U-Boot.
 
-[[rule]]
+[[target]]
 name = "U-Boot"
 processor = "make"    # make processor
 target = "u-boot.sb"  # make target
@@ -15,6 +15,6 @@ environment.CROSS_COMPILE = "arm-linux-gnueabi-"
 
 # Alternative way:
 #
-# [rule.environment]
+# [target.environment]
 # ARCH = "arm"
 # CROSS_COMPILE = "arm-linux-gnueabi-"

@@ -29,7 +29,7 @@ How to use (TL;DR version)
 
 ```
 $ cat r3build.toml
-[[rule]]
+[[target]]
 name = "Build them all"
 processor = "make"
 only = ["modified"]
@@ -43,7 +43,7 @@ Here's a yet another general one for who is not using `make`.
 
 ```
 $ cat r3build.toml
-[[rule]]
+[[target]]
 name = "Run it"
 processor = "command"
 command = "python -m foobar"
@@ -75,12 +75,12 @@ Please refer to [the skeleton (template)](r3build.skeleton.toml) placed in the r
 Here's an example of `r3build.toml` to run `make` every time you edit your C code:
 
 ```
-[[rule]]
+[[target]]
 name = "Build them all"
 processor = "make"
 ```
 
-The `[[rule]]` line means that it's an item in `rule` array. The `name` config means that the name of this `rule` is "Build them all". The last `processor` config means that `make` processor will be invoked when this `rule` gets triggered. `Processor` does not mean a shell command but a purpose-specific implementations for several types of build targets.
+The `[[target]]` line means that it's an item in `target` array. The `name` config means that the name of this `target` is "Build them all". The last `processor` config means that `make` processor will be invoked when this `target` gets triggered. `Processor` does not mean a shell command but a purpose-specific implementations for several types of build targets.
 
 It's enough to get r3build watch your code. But it'll be annoying to you because it'll run `make` for ALL events
 that occur to your code -- when they are "created", "deleted", "moved" and "modified."
@@ -88,20 +88,20 @@ that occur to your code -- when they are "created", "deleted", "moved" and "modi
 Here's an additional one to "filter" the events; the `only` key.
 
 ```
-[[rule]]
+[[target]]
 name = "Build them all"
 processor = "make"
 only = ["modified"]
 ```
 
-As a result, the rule will only be triggered when your code is being edit (modified).
+As a result, the target will only be triggered when your code is being edit (modified).
 See [the skeleton](r3build.skeleton.toml) for the available values.
 
 You'll notice that it triggers not only for `.c` and `.h` but all files.
 It's super-easy to filter them only for `.c` and `.h` code. Here's how:
 
 ```
-[[rule]]
+[[target]]
 name = "Build them all"
 processor = "make"
 only = ["modified"]
@@ -112,7 +112,7 @@ You would already understood the most part of `r3build.toml`.
 Here's one more thing to good to know. "Exclude" keys.
 
 ```
-[[rule]]
+[[target]]
 name = "Build them all"
 processor = "make"
 only = ["modified"]

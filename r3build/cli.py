@@ -11,7 +11,7 @@ from r3build.processor import Processor, available_processors
 class R3build:
     """The core implementation of r3build.
 
-    It parepares a watcher, rules and processors as described in the config
+    It parepares a watcher, targets and processors as described in the config
     from a TOML or a dict.
 
     Preparation is finished in the __init__ and user has to call run() to
@@ -41,21 +41,21 @@ class R3build:
 
     def run(self):
         # Register paths to watch
-        paths = {rule.path for rule in self.config.rule}
+        paths = {target.path for target in self.config.target}
         for path in paths:
             self.watcher.add_path(path)
 
         # Callback for filesystem events
         def _invoke(event):
-            for rule in self.config.rule:
-                rule.dispatch(event)
+            for target in self.config.target:
+                target.dispatch(event)
 
         # Register callback and start asynchronous watcher
         self.watcher.callback = _invoke
         self.watcher.start()
 
-    def get_rule(self, name):
-        for rule in self.config.rule:
-            if rule.name == name:
-                return rule
+    def get_target(self, name):
+        for target in self.config.target:
+            if target.name == name:
+                return target
         return None
