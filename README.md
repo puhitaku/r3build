@@ -24,7 +24,7 @@ $ cat r3build.toml
 [[target]]
 name = "Build them all"
 processor = "make"
-only = ["modified"]
+when = ["modified"]
 glob = ["*.c", "*.h"]
 glob_exclude = ["extra/*", "extra/**/*"]
 ```
@@ -39,7 +39,7 @@ $ cat r3build.toml
 name = "Run it"
 processor = "command"
 command = "python -m foobar"
-only = ["modified"]
+when = ["modified"]
 glob = ["./foobar/*.py", "./foobar/**/*.py"]
 ```
 
@@ -77,13 +77,13 @@ The `[[target]]` line means that it's an item in `target` array. The `name` conf
 It's enough to get r3build watch your code. But it'll be annoying to you because it'll run `make` for ALL events
 that occur to your code -- when they are "created", "deleted", "moved" and "modified."
 
-Here's an additional one to "filter" the events; the `only` key.
+Here's an additional one to "filter" the events; the `when` key.
 
 ```
 [[target]]
 name = "Build them all"
 processor = "make"
-only = ["modified"]
+when = ["modified"]
 ```
 
 As a result, the target will only be triggered when your code is being edit (modified).
@@ -96,7 +96,7 @@ It's super-easy to filter them only for `.c` and `.h` code. Here's how:
 [[target]]
 name = "Build them all"
 processor = "make"
-only = ["modified"]
+when = ["modified"]
 glob = ["*.c", "*.h"]
 ```
 
@@ -107,7 +107,7 @@ Here's one more thing to good to know. "Exclude" keys.
 [[target]]
 name = "Build them all"
 processor = "make"
-only = ["modified"]
+when = ["modified"]
 glob = ["*.c", "*.h"]
 glob_exclude = ["extra/*", "extra/**/*"]
 ```

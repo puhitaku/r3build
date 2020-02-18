@@ -32,8 +32,8 @@ class Target:
         return self._processor
 
     @property
-    def only(self):
-        return self._target_config.get('only', "")
+    def when(self):
+        return self._target_config.get('when', "")
 
     @property
     def path(self):
@@ -71,7 +71,7 @@ class Target:
             elif k == 'regex_exclude' and self._filter_regex(v, event):
                 self._log_filtered_event(event)
                 return
-            elif k == 'only' and not self._filter_only(v, event):
+            elif k == 'when' and not self._filter_when(v, event):
                 self._log_filtered_event(event)
                 return
 
@@ -118,10 +118,10 @@ class Target:
         match = self._re_match(pattern)
         return match(event.src_path) is not None
 
-    def _filter_only(self, only, event):
-        if isinstance(only, list):
-            return any(o == event.event_type for o in only)
-        return only == event.event_type
+    def _filter_when(self, when, event):
+        if isinstance(when, list):
+            return any(o == event.event_type for o in when)
+        return when == event.event_type
 
     def _log_filtered_event(self, event):
         if self._root_config.log.filtered_events:

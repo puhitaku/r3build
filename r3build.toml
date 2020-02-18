@@ -6,6 +6,6 @@
   processor = "command"
   command = "pytest"
 
-  only = ["modified"]
+  when = ["modified"]
   glob = ["./**/*.py", "./r3build.toml"]
 
