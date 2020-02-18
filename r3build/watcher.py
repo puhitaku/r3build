@@ -123,4 +123,3 @@ class Watcher(FileSystemEventHandler, threading.Thread):
             print(f'Accepted event: {event}')
 
         self.event_buffer.push(event)
-

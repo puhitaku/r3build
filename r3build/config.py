@@ -74,9 +74,7 @@ class Rule:
                 return
 
         if self._root_config.log.dispatched_events:
-            print(
-                f'R3build: detected rule <{self.name}> path={event.src_path}, event={event.event_type}'
-            )
+            print(f'>> R3BUILD >> detected a change for rule "{self.name}" >>\n')
 
         lacks = self.processor.mendatory_keys - set(self._rule_config.keys())
         if len(lacks) >= 1:
@@ -132,12 +130,15 @@ class Config:
             dispatched_events = log.get('dispatched_events', False) or enable_all
             processor_output = log.get('processor_output', True) or enable_all
             time = log.get('time', False) or enable_all
+
         self.log = Log()
 
         # Load Config.event
         event = raw_dict.get('event', dict())
+
         class Event:
             rate_limit_duration = event.get('rate_limit_duration', 0.01)
+
         self.event = Event()
 
         # Load Config.rule
