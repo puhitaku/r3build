@@ -1,4 +1,2 @@
-click
-toml
 black
 pytest
