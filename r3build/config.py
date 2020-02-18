@@ -87,9 +87,11 @@ class Target:
         result = self.processor.on_change(self._target_config, event)
         diff = datetime.now() - start
 
+        info = []
+
         if self._root_config.log.result:
             mes = 'SUCCEEDED' if result else 'FAILED'
-            print(f'\n >> R3BUILD >> target "{self.name}" have {mes} >>\n')
+            info.append(f'have {mes}')
 
         if self._root_config.log.time:
             h = floor(diff / timedelta(hours=1))
@@ -98,7 +100,12 @@ class Target:
             h = f'{h:02d}h' if h > 0 else ''
             m = f'{m:02d}m' if m > 0 else ''
             s = f'{s:02d}s'
-            print(f' >> R3BUILD >> target "{self.name}" took {h}{m}{s}')
+            info.append(f'took {h}{m}{s}')
+
+        if info:
+            info = ', '.join(info)
+            print(f'\n >> R3BUILD >> target "{self.name}" {info} >>\n')
+
 
     """Utilities"""
 
