@@ -1,6 +1,8 @@
 import re
+from datetime import datetime, timedelta
 from fnmatch import fnmatchcase
 from functools import lru_cache
+from math import floor
 
 from r3build.processor import Processor, available_processors
 
@@ -81,16 +83,22 @@ class Target:
             human = ', '.join(sorted(list(lacks)))
             raise RuntimeError(f'Target <{self.name}> lacks mendatory keys: {human}')
 
+        start = datetime.now()
         result = self.processor.on_change(self._target_config, event)
+        diff = datetime.now() - start
 
-        if not self._root_config.log.result:
-            return
+        if self._root_config.log.result:
+            mes = 'SUCCEEDED' if result else 'FAILED'
+            print(f'\n >> R3BUILD >> target "{self.name}" have {mes} >>\n')
 
-        if result:
-            # Success
-            print(f'\n >> R3BUILD >> target "{self.name}" have SUCCEEDED >>\n')
-        else:
-            print(f'\n >> R3BUILD >> target "{self.name}" have FAILED >>\n')
+        if self._root_config.log.time:
+            h = floor(diff / timedelta(hours=1))
+            m = floor(diff / timedelta(minutes=1)) % 60
+            s = floor(diff / timedelta(seconds=1)) % 60
+            h = f'{h:02d}h' if h > 0 else ''
+            m = f'{m:02d}m' if m > 0 else ''
+            s = f'{s:02d}s'
+            print(f' >> R3BUILD >> target "{self.name}" took {h}{m}{s}')
 
     """Utilities"""
 

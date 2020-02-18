@@ -31,8 +31,7 @@ processor_output = true
 # `result` (bool): show if the run was successful or not.
 result = true
 
-# TODO
-# `time` (bool): show targets' execution duration
+# `time` (bool): show targets' execution time
 time = false
 
 

@@ -1,5 +1,6 @@
 [log]
   dispatched_events = true
+  time = true
 
 [[target]]
   name = "Tests"
