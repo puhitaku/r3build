@@ -4,14 +4,6 @@ r3build
 r3build _[rìːbíld]_ runs commands when you modify files.
 
 
-Confirmed platforms
--------------------
-
- - Python 3.8.1 + Debian Linux 10 (Buster)
-
-It should work on any platform with Python 3.6+.
-
-
 Install
 -------
 
@@ -22,8 +14,8 @@ $ pip install git+https://github.com/puhitaku/r3build
 ```
 
 
-How to use (TL;DR version)
---------------------------
+How to use (TL;DR)
+------------------
 
 1. Write `r3build.toml` in your project directory.
 
@@ -62,8 +54,8 @@ $ python -m r3build
 3. Edit your code as you want, and enjoy them being built / run automatically.
 
 
-How to use (verbose version)
-----------------------------
+How to use (verbose)
+--------------------
 
 The most important part of r3build, `r3build.toml`, defines how it watches, runs and builds the code.
 Other than that, it also defines all behavior of r3build, like, how it outputs the logs to console.
@@ -123,6 +115,14 @@ glob_exclude = ["extra/*", "extra/**/*"]
 The `glob_exclude` configuration will ignore the changes occurred in `extra` directory.
 
 For other processors and configurations, see [r3build.skeleton.toml](r3build.skeleton.toml) (and the code of course :wink:)
+
+
+Confirmed platforms
+-------------------
+
+ - Python 3.8.1 + Debian Linux 10 (Buster)
+
+It should work on any platform with Python 3.6+.
 
 
 Motivation
