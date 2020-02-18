@@ -145,7 +145,7 @@ class Config:
             accepted_events = log.get('accepted_events', False) or enable_all
             rate_limited_events = log.get('rate_limited_events', False) or enable_all
             filtered_events = log.get('filtered_events', False) or enable_all
-            dispatched_events = log.get('dispatched_events', False) or enable_all
+            dispatched_events = log.get('dispatched_events', True) or enable_all
             processor_output = log.get('processor_output', True) or enable_all
             result = log.get('result', True) or enable_all
             time = log.get('time', False) or enable_all

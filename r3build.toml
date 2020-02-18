@@ -1,5 +1,4 @@
 [log]
-  dispatched_events = true
   time = true
 
 [[target]]
