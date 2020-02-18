@@ -4,6 +4,14 @@ r3build
 r3build _[rìːbíld]_ runs commands when you modify files.
 
 
+Confirmed platforms
+-------------------
+
+ - Python 3.8.1 + Debian Linux 10 (Buster)
+
+It should work on any platform with Python 3.6+.
+
+
 Install
 -------
 
