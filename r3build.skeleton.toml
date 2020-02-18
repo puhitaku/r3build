@@ -13,14 +13,17 @@
 all = false
 
 # `accepted_events` (bool): show all incoming events except rate-limited ones.
-accepted_events = true
-
-# `ignored_events` (bool): show rate-limited events. Only for debug purpose.
-ignored_events = false
+accepted_events = false
 
 # `rate_limited_events` (bool): show rate-limited events.
 # Hint: rate-limit duration is set by `event.rate_limit_duration`.
 rate_limited_events = false
+
+# `filtered_events` (bool): show filtered events.
+filtered_events = false`
+
+# `dispatched_events` (bool): show events dispatched to processors.
+dispatched_events = false
 
 # `processor_output` (bool): output of an activated processor
 processor_output = true

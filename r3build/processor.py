@@ -11,98 +11,31 @@ from typing import Any, Dict, List, Set
 class Processor:
     id: str
     mendatory_keys: Set[str] = set()
-    additional_keys: Set[str] = set()
-
-    name: str = 'noname'
-    kv: Dict[str, Any]
-    root_config: object  # r3build.config.Config
+    optional_keys: Set[str] = set()
 
     def __init__(self, root_config):
-        self.kv = dict()
         self.root_config = root_config
 
-    def get(self, key, default=None):
-        return self.kv.get(key, default)
-
-    def set(self, key, value):
-        self.kv[key] = value
-
-    def dispatch(self, event):
-        for k, v in self.kv.items():
-            if k == 'glob' and not self._filter_glob(v, event):
-                self._log_filtered_event(event)
-                return
-            elif k == 'glob_exclude' and self._filter_glob(v, event):
-                self._log_filtered_event(event)
-                return
-            elif k == 'regex' and not self._filter_regex(v, event):
-                self._log_filtered_event(event)
-                return
-            elif k == 'regex_exclude' and self._filter_regex(v, event):
-                self._log_filtered_event(event)
-                return
-            elif k == 'only' and not self._filter_only(v, event):
-                self._log_filtered_event(event)
-                return
-
-        if not self._is_sufficient():
-            lack = self.mendatory_keys - set(self.kv.keys())
-            lack = ', '.join(lack)
-            s = 's' if len(lack) > 1 else ''
-            raise RuntimeError(f'Processor {self.id} lacks mendatory key{s}: {lack}')
-
-        if self.root_config.log.dispatched_events:
-            print(
-                f'R3build: detected rule <{self.name}> path={event.src_path}, event={event.event_type}'
-            )
-        self.on_change(event)
-
-    def on_change(self, event):
+    def on_change(self, config, event):
         raise NotImplementedError
-
-    def _is_sufficient(self):
-        return self.mendatory_keys.issubset(set(self.kv.keys()))
-
-    def _filter_glob(self, pattern, event):
-        if isinstance(pattern, list):
-            return any(fnmatchcase(event.src_path, p) for p in pattern)
-        return fnmatchcase(event.src_path, pattern)
-
-    def _filter_regex(self, pattern, event):
-        match = self._re_match(pattern)
-        return match(event.src_path) is not None
-
-    def _filter_only(self, only, event):
-        if isinstance(only, list):
-            return any(o == event.event_type for o in only)
-        return only == event.event_type
-
-    def _log_filtered_event(self, event):
-        if self.root_config.log.filtered_events:
-            print(f'Filtered event: {event}')
-
-    @staticmethod
-    @lru_cache(typed=True)
-    def _re_match(pattern):
-        return re.compile(pattern).search
 
 
 class MakeProcessor(Processor):
     id = 'make'
-    additional_keys = {'target', 'environment', 'jobs'}
+    optional_keys = {'target', 'environment', 'jobs'}
 
-    def on_change(self, event):
-        jobs = self.get('jobs', 'auto')
+    def on_change(self, config, event):
+        jobs = config.get('jobs', 'auto')
         if jobs == 'auto':
             jobs = str(cpu_count())
         else:
             jobs = str(jobs)
 
-        target = self.get('target', '')
+        target = config.get('target', '')
         cmd = f'make -j{jobs} {target}'.strip()
 
         env = os.environ
-        env.update(self.get('environment', dict()))
+        env.update(config.get('environment', dict()))
 
         kwargs = dict()
         if not self.root_config.log.processor_output:
@@ -131,12 +64,12 @@ class PytestProcessor(Processor):
 class CommandProcessor(Processor):
     id = 'command'
     mendatory_keys = {'command'}
-    additional_keys = {'environment'}
+    optional_keys = {'environment'}
 
-    def on_change(self, event):
-        cmd = self.get('command')
+    def on_change(self, config, event):
+        cmd = config.get('command', None)
         env = os.environ
-        env.update(self.get('environment', dict()))
+        env.update(config.get('environment', dict()))
 
         kwargs = dict()
         if not self.root_config.log.processor_output:
@@ -156,9 +89,10 @@ class TestableProcessor(Processor):
     def clear_history(self):
         self.history = []
 
-    def on_change(self, event):
+    def on_change(self, config, event):
         self.history.append(event)
-        print(f'<{self.name}>  event: {event.event_type}, path: {event.src_path}')
+        name = config.get('name', 'noname')
+        print(f'<{name}>  event: {event.event_type}, path: {event.src_path}')
 
 
 p = [

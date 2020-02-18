@@ -48,7 +48,7 @@ class R3build:
         # Callback for filesystem events
         def _invoke(event):
             for rule in self.config.rule:
-                rule.processor.dispatch(event)
+                rule.dispatch(event)
 
         # Register callback and start asynchronous watcher
         self.watcher.callback = _invoke

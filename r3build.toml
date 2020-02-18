@@ -1,7 +1,11 @@
+[log]
+  dispatched_events = true
+
 [[rule]]
   name = "Tests"
   processor = "command"
-  only = ["modified"]
-  glob = "./**/*.py"
   command = "pytest"
+
+  only = ["modified"]
+  glob = ["./**/*.py", "./r3build.toml"]
 
