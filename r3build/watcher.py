@@ -103,7 +103,6 @@ class Watcher(FileSystemEventHandler, threading.Thread):
             for event, timestamp in self.event_buffer.items():
                 elapsed = datetime.now().timestamp() - timestamp
                 if elapsed <= self.config.event.rate_limit_duration:
-                    self.event_buffer.pop(event)
                     continue
                 elif self.config.event.ignore_events_while_run and timestamp < last:
                     if self.config.log.rate_limited_events:
