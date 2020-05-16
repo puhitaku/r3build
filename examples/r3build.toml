@@ -1,0 +1,13 @@
+# This files is same as the one in r3build repository root.
+
+[log]
+  time = true
+
+[[target]]
+  name = "Tests"
+  processor = "pytest"
+  target = "r3build"
+
+  when = ["modified"]
+  glob = ["./**/*.py", "./r3build.toml"]
+
