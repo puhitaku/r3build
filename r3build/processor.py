@@ -15,6 +15,18 @@ class Processor:
     def on_change(self, config, event):
         raise NotImplementedError
 
+    def _helper_run(self, cmd, **kwargs):
+        if not self.root_config.log.processor_output:
+            kwargs['stdout'] = subprocess.DEVNULL
+            kwargs['stderr'] = subprocess.DEVNULL
+        return subprocess.run(cmd, **kwargs)
+
+    @staticmethod
+    def _helper_merge_env(config):
+        env = os.environ
+        env.update(config.get('environment', dict()))
+        return env
+
 
 class MakeProcessor(Processor):
     id = 'make'
@@ -29,16 +41,8 @@ class MakeProcessor(Processor):
 
         target = config.get('target', '')
         cmd = f'make -j{jobs} {target}'.strip()
-
-        env = os.environ
-        env.update(config.get('environment', dict()))
-
-        kwargs = dict()
-        if not self.root_config.log.processor_output:
-            kwargs = {'stdout': subprocess.DEVNULL, 'stderr': subprocess.DEVNULL}
-
-        result = subprocess.run(cmd, shell=True, env=env, **kwargs)
-        return result.returncode == 0
+        env = self._helper_merge_env(config)
+        return self._helper_run(cmd, shell=True, env=env).returncode == 0
 
 
 class PytestProcessor(Processor):
@@ -64,15 +68,8 @@ class CommandProcessor(Processor):
 
     def on_change(self, config, event):
         cmd = config.get('command', None)
-        env = os.environ
-        env.update(config.get('environment', dict()))
-
-        kwargs = dict()
-        if not self.root_config.log.processor_output:
-            kwargs = {'stdout': subprocess.DEVNULL, 'stderr': subprocess.DEVNULL}
-
-        result = subprocess.run(cmd, shell=True, env=env, **kwargs)
-        return result.returncode == 0
+        env = self._helper_merge_env(config)
+        return self._helper_run(cmd, shell=True, env=env).returncode == 0
 
 
 class TestableProcessor(Processor):
