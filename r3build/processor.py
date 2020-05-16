@@ -62,7 +62,6 @@ class PytestProcessor(Processor):
         return exitcode == 0
 
 
-
 class CommandProcessor(Processor):
     id = 'command'
     mendatory_keys = {'command'}
