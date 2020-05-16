@@ -1,6 +1,6 @@
 <div align="center">
     <p><img width=500px src="./r3build.svg" alt="r3build logo"></p>
-    <h1>r3build the file watcher</h1>
+    <h1>r3build, a smart file watcher</h1>
 
 [![CircleCI](https://circleci.com/gh/puhitaku/r3build.svg?style=svg)](https://circleci.com/gh/puhitaku/r3build) [![Coverage Status](https://coveralls.io/repos/github/puhitaku/r3build/badge.svg?branch=v1)](https://coveralls.io/github/puhitaku/r3build?branch=v1)
 </div>
@@ -67,12 +67,9 @@ $ python -m r3build
 How to use (verbose)
 --------------------
 
-The most important part of r3build, `r3build.toml`, defines how it watches, runs and builds the code.
-Other than that, it also defines all behavior of r3build, like, how it outputs the logs to console.
-
-Let's write your `r3build.toml` and place it into your project. It's good to put it in the root directory.
-
-Please refer to [the skeleton (template)](r3build.skeleton.toml) placed in the root of this repository.
+The configuration file, `r3build.toml`, defines how it watches, runs, and builds the code.
+Other than that, it also defines all behavior of r3build like if it outputs the logs to console and how to filter events.
+(For details, please refer to [the skeleton (template)](r3build.skeleton.toml) placed in the root of this repository.)
 
 Here's an example of `r3build.toml` to run `make` every time you edit your C code:
 
@@ -138,9 +135,9 @@ It should work on any platform with Python 3.6+.
 Motivation
 ----------
 
-I used to use [joh/when-changed](https://github.com/joh/when-changed). This is a handy tool to tell computers to do something when I make changes to files. But when it comes to complex detection, like "run make when I edit C code but ignore intermediate files," it won't fit or I had to write dirty grep filter to get rid of garbages.
+I used to use [joh/when-changed](https://github.com/joh/when-changed). This was enough to watch changes. But when it comes to complex detection, like "run make when I edit C code but ignore intermediate files," I had to write dirty grep filter to get rid of garbages.
 
-To achieve complex detection, there should be a well-structured configuration file that describes its behavior. I've got an idea of r3build (detector with configuration file) and it came real finally.
+To achieve the smart detection, I thought of a well-structured configuration file that describes its behavior. I've got an idea of r3build (detector with configuration file) and it came real finally.
 
 
 License and Copyright
@@ -149,5 +146,4 @@ License and Copyright
 MIT License
 
 Copyright (c) 2020 Takumi Sueda
-
 
