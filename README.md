@@ -127,7 +127,8 @@ For other processors and configurations, see [r3build.skeleton.toml](r3build.ske
 Confirmed platforms
 -------------------
 
- - Python 3.8.1 + Debian Linux 10 (Buster)
+ - Python 3.8.3 + Debian Linux 10 (Buster)
+ - Python 3.8.3 + macOS 10.14.6 Mojave
 
 It should work on any platform with Python 3.6+.
 
@@ -137,7 +138,7 @@ Motivation
 
 I used to use [joh/when-changed](https://github.com/joh/when-changed). This was enough to watch changes. But when it comes to complex detection, like "run make when I edit C code but ignore intermediate files," I had to write dirty grep filter to get rid of garbages.
 
-To achieve the smart detection, I thought of a well-structured configuration file that describes its behavior. I've got an idea of r3build (detector with configuration file) and it came real finally.
+To achieve the smart detection, I thought of a well-structured configuration file that describes its behavior and finally I got the concept of r3build.
 
 
 License and Copyright
