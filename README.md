@@ -1,7 +1,13 @@
-r3build
-=======
+<div align="center">
+    <p><img width=500px src="./r3build.svg" alt="r3build logo"></p>
+    <h1>r3build the file watcher</h1>
 
-<img width=500px src="./r3build.svg" alt="r3build logo">
+    [![CircleCI](https://circleci.com/gh/puhitaku/r3build.svg?style=svg)](https://circleci.com/gh/puhitaku/r3build) [![Coverage Status](https://coveralls.io/repos/github/puhitaku/r3build/badge.svg?branch=v1)](https://coveralls.io/github/puhitaku/r3build?branch=v1)
+</div>
+
+
+Preface
+-------
 
 r3build _[rìːbíld]_ is yet another smart file watcher that helps you develop something.
 The most notable thing is the smart configuration written in TOML. It will enable you to install a
