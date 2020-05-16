@@ -1,7 +1,11 @@
 r3build
 =======
 
-r3build _[rìːbíld]_ runs commands when you modify files.
+<img width=500px src="./r3build.svg" alt="r3build logo">
+
+r3build _[rìːbíld]_ is yet another smart file watcher that helps you develop something.
+The most notable thing is the smart configuration written in TOML. It will enable you to install a
+super simple watcher in a seconds and to grow the watcher to handle a wide range of file events.
 
 
 Install
