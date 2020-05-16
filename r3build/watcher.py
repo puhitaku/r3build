@@ -105,7 +105,7 @@ class Watcher(FileSystemEventHandler, threading.Thread):
                     continue
                 self.event_buffer.pop(event)
                 self._callback(event)
-            time.sleep(0.001)
+            time.sleep(0.1)
 
     # -- Impl. of FileSystemEventHandler --
 
