@@ -10,8 +10,8 @@ Preface
 -------
 
 r3build _[rìːbíld]_ is yet another smart file watcher that helps you develop something.
-The most notable thing is the smart configuration written in TOML. It will enable you to install a
-super simple watcher in a seconds and to grow the watcher to handle a wide range of file events.
+The most notable thing is the easy but powerful configuration system. It will enable you to install a
+minimal watcher for the first step and also to grow the watcher to handle a wide range of file events.
 
 
 Install
