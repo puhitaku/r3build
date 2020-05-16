@@ -4,7 +4,7 @@ from fnmatch import fnmatchcase
 from functools import lru_cache
 from math import floor
 
-from r3build.processor import Processor, available_processors
+from r3build.processor import available_processors
 
 
 class Target:
@@ -105,7 +105,6 @@ class Target:
         if info:
             info = ', '.join(info)
             print(f'\n >> R3BUILD >> target "{self.name}" {info} >>\n')
-
 
     """Utilities"""
 

@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import functools
 import threading
 import time
 from datetime import datetime
-from typing import Any, Callable, List, Set
+from typing import Callable, Dict
 
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEvent, FileSystemEventHandler

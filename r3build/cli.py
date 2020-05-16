@@ -1,11 +1,7 @@
-from typing import List
-
 import toml
-from watchdog.observers import Observer
 
 from r3build import watcher
 from r3build.config import Config
-from r3build.processor import Processor, available_processors
 
 
 class R3build:
