@@ -116,3 +116,10 @@ command = ""
 # Basically, r3build inherits the parent's envs. This table is for passing specific envs to the command.
 environment = {}
 
+
+# -- CONFIGS FOR `pytest` PROCESSOR (r3build.processor.PytestProcessor) --
+
+# `module` (str) *MENDATORY*: file or directory to run tests.
+# This string is passed to pytest.main() and is used for reloading Python modules to update test code.
+# For an advanced use like passing arbitrary arguments to pytest, please use `command` processor.
+target = ""

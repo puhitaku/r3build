@@ -1,5 +1,7 @@
+import importlib
 import os
 import subprocess
+import sys
 from multiprocessing import cpu_count
 from typing import Set
 
@@ -46,19 +48,19 @@ class MakeProcessor(Processor):
 
 
 class PytestProcessor(Processor):
-    # RECOMMEND: use `CommandProcessor` to run pytest.
-    # FIXME: this processor looks like working but it does not
-    #        affect the change of code that are being tested.
-    #        We have to find how to identify what's being tested in runtime and
-    #        its module name to commence re-import and remove side-effect.
-    #        This means it's totally unusable in the field that r3build
-    #        focuses into -- doing re-builds and re-tests.
-    #        We won't deprecate it for now, but it won't be enabled until this issue is solved.
     id = 'pytest'
+    mendatory_keys = {'target'}
 
     def on_change(self, config, event):
         import pytest
-        pytest.main()
+
+        pytest_target = config['target']
+        modules = [v for k, v in sys.modules.items() if k.startswith(pytest_target)]
+        for m in modules:
+            importlib.reload(m)
+        exitcode = pytest.main([pytest_target])
+        return exitcode == 0
+
 
 
 class CommandProcessor(Processor):
@@ -92,7 +94,7 @@ class TestableProcessor(Processor):
 
 p = [
     MakeProcessor,
-    # PytestProcessor,
+    PytestProcessor,
     CommandProcessor,
     TestableProcessor,
 ]
