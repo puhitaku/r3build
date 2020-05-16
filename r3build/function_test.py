@@ -42,7 +42,10 @@ def instance(tmp):
             'regex_exclude': '.+/regex2/exclude/[^.]+\.txt',
         },
     ]
-    r3 = R3build(config_dict={'target': targets})
+    log = {
+        'all': True,
+    }
+    r3 = R3build(config_dict={'target': targets, 'log': log})
     r3.run()
     return r3
 
