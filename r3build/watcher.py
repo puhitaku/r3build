@@ -60,7 +60,7 @@ class Watcher(FileSystemEventHandler, threading.Thread):
     observer: Observer
     has_path: bool
     event_buffer: EventBuffer
-    _callback: Callable[[FileSystemEvent], None]
+    _callback: Callable[[FileSystemEvent], bool]  # returns if the event was accepted
 
     def __init__(self, config):
         FileSystemEventHandler.__init__(self)
@@ -97,14 +97,23 @@ class Watcher(FileSystemEventHandler, threading.Thread):
             raise RuntimeError('Set callback before starting watcher')
 
         self.observer.start()
+        last = datetime.now().timestamp()
 
         while True:
             for event, timestamp in self.event_buffer.items():
                 elapsed = datetime.now().timestamp() - timestamp
                 if elapsed <= self.config.event.rate_limit_duration:
+                    self.event_buffer.pop(event)
+                    continue
+                elif self.config.event.ignore_events_while_run and timestamp < last:
+                    if self.config.log.rate_limited_events:
+                        print(f'Ignored event while run: {event}, {timestamp} < {last}')
+                    self.event_buffer.pop(event)
                     continue
                 self.event_buffer.pop(event)
-                self._callback(event)
+                accepted = self._callback(event)
+                if accepted:
+                    last = datetime.now().timestamp()
             time.sleep(0.1)
 
     # -- Impl. of FileSystemEventHandler --

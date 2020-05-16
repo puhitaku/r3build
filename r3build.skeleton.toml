@@ -42,6 +42,9 @@ time = false
 # Do not make it longer unless you experience unwanted duplications.
 rate_limit_duration = 0.01
 
+# `ignore_events_while_run` (bool): ignore events occurred while running a processor.
+ignore_events_while_run = true
+
 
 [[target]]
 # The `target` section is an array of targets.

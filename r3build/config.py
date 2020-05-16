@@ -61,19 +61,19 @@ class Target:
         for k, v in self._target_config.items():
             if k == 'glob' and not self._filter_glob(v, event):
                 self._log_filtered_event(event)
-                return
+                return False
             elif k == 'glob_exclude' and self._filter_glob(v, event):
                 self._log_filtered_event(event)
-                return
+                return False
             elif k == 'regex' and not self._filter_regex(v, event):
                 self._log_filtered_event(event)
-                return
+                return False
             elif k == 'regex_exclude' and self._filter_regex(v, event):
                 self._log_filtered_event(event)
-                return
+                return False
             elif k == 'when' and not self._filter_when(v, event):
                 self._log_filtered_event(event)
-                return
+                return False
 
         if self._root_config.log.dispatched_events:
             print(f'\n >> R3BUILD >> detected a change for target "{self.name}" >>\n')
@@ -105,6 +105,8 @@ class Target:
         if info:
             info = ', '.join(info)
             print(f'\n >> R3BUILD >> target "{self.name}" {info} >>\n')
+
+        return True
 
     """Utilities"""
 
@@ -163,6 +165,7 @@ class Config:
 
         class Event:
             rate_limit_duration = event.get('rate_limit_duration', 0.01)
+            ignore_events_while_run = event.get('ignore_events_while_run', True)
 
         self.event = Event()
 

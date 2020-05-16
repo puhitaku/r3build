@@ -43,8 +43,10 @@ class R3build:
 
         # Callback for filesystem events
         def _invoke(event):
+            accepted = False
             for target in self.config.target:
-                target.dispatch(event)
+                accepted |= target.dispatch(event)
+            return accepted
 
         # Register callback and start asynchronous watcher
         self.watcher.callback = _invoke
