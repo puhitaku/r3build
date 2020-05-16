@@ -1,2 +1,4 @@
 black
+coveralls
 pytest
+pytest-cov
