@@ -20,7 +20,7 @@ accepted_events = false
 rate_limited_events = false
 
 # `filtered_events` (bool): show filtered events.
-filtered_events = false`
+filtered_events = false
 
 # `dispatched_events` (bool): show events dispatched to processors.
 dispatched_events = false
