@@ -91,7 +91,7 @@ class Target:
 
         if self._root_config.log.result:
             mes = 'SUCCEEDED' if result else 'FAILED'
-            info.append(f'have {mes}')
+            info.append(f'has {mes}')
 
         if self._root_config.log.time:
             h = floor(diff / timedelta(hours=1))
