@@ -18,7 +18,10 @@ class Processor:
         raise NotImplementedError
 
     def _helper_run(self, cmd, **kwargs):
-        if not self.root_config.log.processor_output:
+        print(f'Running command: {cmd}')
+        if self.root_config.log.processor_output:
+            print('Command output:')
+        else:
             kwargs['stdout'] = subprocess.DEVNULL
             kwargs['stderr'] = subprocess.DEVNULL
         return subprocess.run(cmd, **kwargs)
