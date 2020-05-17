@@ -116,8 +116,14 @@ class Target:
         return fnmatchcase(event.src_path, pattern)
 
     def _filter_regex(self, pattern, event):
-        match = self._re_match(pattern)
-        return match(event.src_path) is not None
+        if isinstance(pattern, str):
+            match = [self._re_match(pattern)]
+        elif isinstance(pattern, list):
+            match = [self._re_match(p) for p in pattern]
+        else:
+            # TODO: ensure type in parsing stage
+            raise TypeError(f"unsupported type for regex rules: {type(pattern)}")
+        return any(m(event.src_path) is not None for m in match)
 
     def _filter_when(self, when, event):
         if isinstance(when, list):
