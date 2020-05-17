@@ -42,7 +42,12 @@ class MakeProcessor(Processor):
             jobs = str(jobs)
 
         target = config.get('target', '')
-        cmd = f'make -j{jobs} {target}'.strip()
+
+        directory = config.get('directory', '')
+        if directory:
+            directory = f'-C {directory}'
+
+        cmd = f'make -j{jobs} {directory} {target}'.strip()
         env = self._helper_merge_env(config)
         return self._helper_run(cmd, shell=True, env=env).returncode == 0
 

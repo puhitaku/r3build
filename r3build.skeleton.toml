@@ -107,6 +107,10 @@ environment = {}
 # Only "auto" is allowed as a str value that means r3build will decide N of jobs with multiprocessing.cpu_count().
 jobs = "auto"
 
+# `directory` (str): the directory to read Makefile in.
+# Equivalent to `make -C` option.
+directory = ""
+
 
 # -- CONFIGS FOR `command` PROCESSOR (r3build.processor.CommandProcessor) --
 
