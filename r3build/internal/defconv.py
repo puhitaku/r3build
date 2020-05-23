@@ -1,14 +1,13 @@
-import sys
 from dataclasses import asdict, dataclass
 from pprint import saferepr
-from typing import Any, Dict, List, Union
-from textwrap import indent, dedent
+from typing import Any, Dict, List, Union  # necessary for eval
+from textwrap import indent
 
 import black
 import click
 import tomlkit as tk
 import tomlkit.items
-from black import format_str, FileMode, TargetVersion
+from black import FileMode, TargetVersion
 
 
 class Literalify:
