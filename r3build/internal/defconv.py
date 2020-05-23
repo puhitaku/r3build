@@ -5,7 +5,9 @@ from typing import Any, Dict, List, Union
 from textwrap import indent, dedent
 
 import black
-import tomlkit
+import click
+import tomlkit as tk
+import tomlkit.items
 from black import format_str, FileMode, TargetVersion
 
 
@@ -69,7 +71,99 @@ class Item:
         return str(asdict(self))
 
 
-template = '''
+@click.group()
+def cmd():
+    pass
+
+
+@cmd.command()
+@click.argument('f', metavar='TOML', type=click.File('r'))
+def skel(f):
+    def2skel(tk.loads(f.read()))
+
+
+@cmd.command()
+@click.argument('f', metavar='TOML', type=click.File('r'))
+def model(f):
+    def2model(tk.loads(f.read()))
+
+
+def def2skel(de):
+    sections = {section: parse_section(de[section]) for section in ['log', 'event']}
+    processors = {name: parse_section(processor) for name, processor in de['target'].items()}
+
+    def add_mlc(s, blank=True):
+        for c in s.strip().split('\n'):
+            doc.add(tk.comment(c))
+        if blank:
+            doc.add(br)
+
+    br, br2 = tk.ws('\n'), tk.ws('\n\n')
+
+    doc = tk.document()
+    doc.add(tk.comment('This file shows the skeleton of r3build.toml.'))
+    doc.add(tk.comment('It is structured with a bunch of sections that contain multiple keys and values.'))
+    doc.add(br)
+    doc.add(tk.comment('Values in this file are the default value of corresponding keys.'))
+    doc.add(br)
+
+
+    for name, props in sections.items():
+        exs = []
+
+        for key, value in [(t[0], t[1]) for t in props.items() if not t[0].startswith('__')]:
+            vex = f'{key} ({repr(value.type)}) {" *REQUIRED " if value.required else ""}\n'
+            vex += f'{indent(value.description, "#  - ")}\n#'
+            exs.append(vex)
+        exs[-1] = exs[-1][:-2] + '\n'
+
+        comment = '\n# ' + props["__description__"].replace('\n', '\n# ') + '\n\n# ' + '\n# '.join(exs)
+        trivia = tk.items.Trivia(comment_ws=" ", comment=comment)
+
+        if name == 'target':
+            section = tk.api.AoT([])
+            table = tk.api.Table(tk.api.Container(), trivia, False)
+            for key, value in [(t[0], t[1]) for t in props.items() if not t[0].startswith('__')]:
+                table.add(key, value.default)
+            section.append(table)
+        else:
+            section = tk.api.Table(tk.api.Container(), trivia, False)
+            for key, value in [(t[0], t[1]) for t in props.items() if not t[0].startswith('__')]:
+                section.add(key, value.default)
+
+
+        doc.add(name, section)
+        doc.add(br)
+
+    for name, props in processors.items():
+        exs = []
+        for key, value in [(t[0], t[1]) for t in props.items() if not t[0].startswith('__')]:
+            vex = f'{key} ({repr(value.type)}) {" *REQUIRED* " if value.required else ""}\n'
+            vex += f'{indent(value.description, "#  - ")}\n#'
+            exs.append(vex)
+        exs[-1] = exs[-1][:-2] + '\n'
+
+        if name == 'common':
+            comment = '\n# ' + props["__description__"].replace('\n', '\n# ') + '\n\n# ' + '\n# '.join(exs)
+        else:
+            comment = f' # Properties specific to `{name}` processor\n'
+            comment += '# ' + props["__description__"].replace('\n', '\n# ') + '\n\n# ' + '\n# '.join(exs)
+
+        trivia = tk.items.Trivia(comment_ws=" ", comment=comment, indent='\n\n')
+        table = tk.api.Table(tk.api.Container(), trivia, False)
+
+        for key, value in [(t[0], t[1]) for t in props.items() if not t[0].startswith('__')]:
+            table.add(key, value.default)
+
+        section = tk.api.AoT([])
+        section.append(table)
+
+        doc.add('target', section)
+
+    print(tk.dumps(doc).strip())
+
+
+def2model_template = '''
 from typing import Dict, List, Union
 
 
@@ -80,14 +174,7 @@ processors = {processors}
 '''
 
 
-def main():
-    if not sys.argv[-1].endswith('.toml'):
-        print('Usage: defconv <def_toml>')
-        sys.exit(1)
-
-    with open(sys.argv[-1]) as f:
-        de = tomlkit.loads(f.read())
-
+def def2model(de):
     sections = {section: parse_section(de[section]) for section in ['log', 'event', 'target']}
     processors = {name: parse_section(processor) for name, processor in de['processor'].items()}
 
@@ -99,14 +186,14 @@ def main():
     sections_f = black.format_str(saferepr(sections), mode=mode)
     processors_f = black.format_str(saferepr(processors), mode=mode)
 
-    print(template.format(sections=sections_f, processors=processors_f))
+    print(def2model_template.format(sections=sections_f, processors=processors_f))
 
 
 def parse_section(section: dict):
     # Workaround not to use pop()
     section_typ = Literalify(eval(section['type']))
     del section['type']
-    section_description = section['description']
+    section_description = section['description'].strip()
     del section['description']
 
     out = {
@@ -126,4 +213,4 @@ def parse_section(section: dict):
 
 
 if __name__ == '__main__':
-    main()
+    cmd()
