@@ -3,7 +3,7 @@ from typing import Dict, List, Union
 
 sections = {
     "event": {
-        "__description__": "The event section defines how r3build handle events.",
+        "__description__": "`event` section defines how r3build handle events.",
         "__type__": dict,
         "ignore_events_while_run": {
             "required": False,
@@ -19,7 +19,7 @@ sections = {
         },
     },
     "log": {
-        "__description__": "The log section defines what r3build will output.\n",
+        "__description__": "`log` section defines what r3build will output.",
         "__type__": dict,
         "accepted_events": {
             "required": False,
@@ -70,8 +70,28 @@ sections = {
             "description": "Show target's execution time.",
         },
     },
-    "target": {
-        "__description__": "The target array defines jobs.\n - What to watch (match and exclude files with glob and regex)\n - What processor to execute\n - How the processor process things\n... and etc.\n",
+}
+
+
+processors = {
+    "command": {
+        "__description__": "`command` processor invokes a command.",
+        "__type__": dict,
+        "command": {
+            "required": True,
+            "type": str,
+            "default": "",
+            "description": "The command to run. This command will be executed by `subprocess.run` with `shell=True`.",
+        },
+        "environment": {
+            "required": False,
+            "type": Dict[str, str],
+            "default": "",
+            "description": "Specify additional environment variables.\nBy default, r3build inherits the parent's envs.",
+        },
+    },
+    "common": {
+        "__description__": "`target` array-of-tables defines jobs.\n - What to watch (match and exclude files with glob and regex)\n - What processor to execute\n - How the processor process things\n... and etc.",
         "__type__": list,
         "glob": {
             "required": False,
@@ -122,28 +142,8 @@ sections = {
             "description": 'One or more types of events to trigger this job.\nThe job will accept all types of events if it\'s ommitted.\nAvailable choices are "moved", "deleted", "created", "modified".',
         },
     },
-}
-
-
-processors = {
-    "command": {
-        "__description__": "Run a command.",
-        "__type__": dict,
-        "command": {
-            "required": True,
-            "type": str,
-            "default": "",
-            "description": "The command to run. This command will be executed by `subprocess.run` with `shell=True`.",
-        },
-        "environment": {
-            "required": False,
-            "type": Dict[str, str],
-            "default": "",
-            "description": "Specify additional environment variables.\nBy default, r3build inherits the parent's envs.",
-        },
-    },
     "make": {
-        "__description__": "Run make target.",
+        "__description__": "`make` processor runs a target in a Makefile.",
         "__type__": dict,
         "directory": {
             "required": False,
@@ -171,7 +171,7 @@ processors = {
         },
     },
     "pytest": {
-        "__description__": "Run pytest on a package (directory) or a module (file).",
+        "__description__": "`pytest` processor runs pytest on a package (directory) or a module (file).",
         "__type__": dict,
         "target": {
             "required": True,

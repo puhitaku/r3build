@@ -175,8 +175,8 @@ processors = {processors}
 
 
 def def2model(de):
-    sections = {section: parse_section(de[section]) for section in ['log', 'event', 'target']}
-    processors = {name: parse_section(processor) for name, processor in de['processor'].items()}
+    sections = {section: parse_section(de[section]) for section in ['log', 'event']}
+    processors = {name: parse_section(processor) for name, processor in de['target'].items()}
 
     mode = FileMode(
         target_versions={TargetVersion.PY36},

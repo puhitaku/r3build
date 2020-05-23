@@ -3,7 +3,7 @@
 [log]
 type = "dict"
 description = """
-The log section defines what r3build will output.
+`log` section defines what r3build will output.
 """
 
 all.type = "bool"
@@ -49,7 +49,7 @@ time.description = "Show target's execution time."
 
 [event]
 type = "dict"
-description = "The event section defines how r3build handle events."
+description = "`event` section defines how r3build handle events."
 
 rate_limit_duration.type = "float"
 rate_limit_duration.default = 0.01
@@ -65,10 +65,10 @@ Disabling this flag may result in a never-ending execution loop. Disable with ca
 """
 
 
-[target]
+[target.common]
 type = "list"
 description = """
-The target array defines jobs.
+`target` array-of-tables defines jobs.
  - What to watch (match and exclude files with glob and regex)
  - What processor to execute
  - How the processor process things
@@ -132,9 +132,9 @@ The target won't be triggered if one or more file patterns match to it.
 """
 
 
-[processor.make]
+[target.make]
 type = "dict"
-description = "Run make target."
+description = "`make` processor runs a target in a Makefile."
 
 target.type = "str"
 target.default = ""
@@ -159,9 +159,9 @@ directory.default = ""
 directory.description = "The directory to read Makefile in. Equivalent to `make -C` option."
 
 
-[processor.command]
+[target.command]
 type = "dict"
-description = "Run a command."
+description = "`command` processor invokes a command."
 
 # TODO: support template to pass filename and more
 command.required = true
@@ -176,9 +176,9 @@ Specify additional environment variables.
 By default, r3build inherits the parent's envs.
 """
 
-[processor.pytest]
+[target.pytest]
 type = "dict"
-description = "Run pytest on a package (directory) or a module (file)."
+description = "`pytest` processor runs pytest on a package (directory) or a module (file)."
 
 target.required = true
 target.type = "str"
