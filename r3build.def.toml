@@ -1,7 +1,6 @@
 # Model definition of r3build.toml.
 
 [log]
-type = "dict"
 description = """
 `log` section defines what r3build will output.
 """
@@ -48,7 +47,6 @@ time.description = "Show target's execution time."
 
 
 [event]
-type = "dict"
 description = "`event` section defines how r3build handle events."
 
 rate_limit_duration.type = "float"
@@ -66,7 +64,6 @@ Disabling this flag may result in a never-ending execution loop. Disable with ca
 
 
 [target.common]
-type = "list"
 description = """
 `target` array-of-tables defines jobs.
  - What to watch (match and exclude files with glob and regex)
@@ -133,7 +130,6 @@ The target won't be triggered if one or more file patterns match to it.
 
 
 [target.make]
-type = "dict"
 description = "`make` processor runs a target in a Makefile."
 
 target.type = "str"
@@ -160,7 +156,6 @@ directory.description = "The directory to read Makefile in. Equivalent to `make 
 
 
 [target.command]
-type = "dict"
 description = "`command` processor invokes a command."
 
 # TODO: support template to pass filename and more
@@ -177,7 +172,6 @@ By default, r3build inherits the parent's envs.
 """
 
 [target.pytest]
-type = "dict"
 description = "`pytest` processor runs pytest on a package (directory) or a module (file)."
 
 target.required = true
@@ -190,5 +184,4 @@ For an advanced use like passing arbitrary arguments to pytest, please use `comm
 """
 
 [target.internaltest]
-type = "dict"
 description = "`_test` processor for testing purpose."
