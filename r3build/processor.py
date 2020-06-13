@@ -81,8 +81,8 @@ class CommandProcessor(Processor):
         return self._helper_run(cmd, shell=True, env=env).returncode == 0
 
 
-class TestableProcessor(Processor):
-    id = '_test'
+class InternaltestProcessor(Processor):
+    id = 'internaltest'
     history = None
 
     def __init__(self, config):
@@ -94,7 +94,7 @@ class TestableProcessor(Processor):
 
     def on_change(self, config, event):
         self.history.append(event)
-        name = config.get('name', 'noname')
+        name = config.name
         print(f'<{name}>  event: {event.event_type}, path: {event.src_path}')
         return True
 
@@ -103,7 +103,7 @@ p = [
     MakeProcessor,
     PytestProcessor,
     CommandProcessor,
-    TestableProcessor,
+    InternaltestProcessor,
 ]
 
 available_processors = {t.id: t for t in p}

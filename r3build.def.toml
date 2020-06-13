@@ -188,3 +188,7 @@ File or directory to run tests.
 This string is passed to pytest.main() and also used for reloading Python modules to update test code.
 For an advanced use like passing arbitrary arguments to pytest, please use `command` processor.
 """
+
+[target.internaltest]
+type = "dict"
+description = "`_test` processor for testing purpose."

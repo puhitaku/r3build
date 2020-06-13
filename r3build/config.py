@@ -1,18 +1,20 @@
+from __future__ import annotations
+
 import re
 from datetime import datetime, timedelta
 from fnmatch import fnmatchcase
 from functools import lru_cache
 from math import floor
+from typing import List
 
 from r3build.processor import available_processors
+from r3build.config_class import Log, Event, Processor, processors
+from r3build.config_validator import AccessValidator
 
 
 class Target:
-    def __init__(self, root_config, target_config):
-        pid = target_config.get('processor', None)
-        if pid is None:
-            raise RuntimeError('Specify a processor in the target')
-
+    def __init__(self, root_config: Config, target_config: Processor):
+        pid = target_config.processor
         p = available_processors.get(pid, None)
         if p is None:
             raise ValueError(f'Unknown processor: "{pid}"')
@@ -25,7 +27,7 @@ class Target:
 
     @property
     def name(self):
-        return self._target_config.get('name', 'noname')
+        return self._target_config.name
 
     @property
     def processor(self):
@@ -33,55 +35,49 @@ class Target:
 
     @property
     def when(self):
-        return self._target_config.get('when', "")
+        return self._target_config.when
 
     @property
     def path(self):
-        return self._target_config.get('path', '.')
+        return self._target_config.path
 
     @property
     def glob(self):
-        return self._target_config.get('glob', "")
+        return self._target_config.glob
 
     @property
     def glob_exclude(self):
-        return self._target_config.get('glob_exclude', "")
+        return self._target_config.glob_exclude
 
     @property
     def regex(self):
-        return self._target_config.get('regex', "")
+        return self._target_config.regex
 
     @property
     def regex_exclude(self):
-        return self._target_config.get('regex_exclude', "")
+        return self._target_config.regex_exclude
 
     """Event dispatch function called from main loop"""
 
     def dispatch(self, event):
-        for k, v in self._target_config.items():
-            if k == 'glob' and not self._filter_glob(v, event):
-                self._log_filtered_event(event)
-                return False
-            elif k == 'glob_exclude' and self._filter_glob(v, event):
-                self._log_filtered_event(event)
-                return False
-            elif k == 'regex' and not self._filter_regex(v, event):
-                self._log_filtered_event(event)
-                return False
-            elif k == 'regex_exclude' and self._filter_regex(v, event):
-                self._log_filtered_event(event)
-                return False
-            elif k == 'when' and not self._filter_when(v, event):
-                self._log_filtered_event(event)
-                return False
+        if self.glob and not self._filter_glob(self.glob, event):
+            self._log_filtered_event(event)
+            return False
+        elif self.glob_exclude and self._filter_glob(self.glob_exclude, event):
+            self._log_filtered_event(event)
+            return False
+        elif self.regex and not self._filter_regex(self.regex, event):
+            self._log_filtered_event(event)
+            return False
+        elif self.regex_exclude and self._filter_regex(self.regex_exclude, event):
+            self._log_filtered_event(event)
+            return False
+        elif self.when and not self._filter_when(self.when, event):
+            self._log_filtered_event(event)
+            return False
 
-        if self._root_config.log.dispatched_events:
+        if self._root_config.log.all or self._root_config.log.dispatched_events:
             print(f'\n >> R3BUILD >> detected a change for target "{self.name}" >>\n')
-
-        lacks = self.processor.mendatory_keys - set(self._target_config.keys())
-        if len(lacks) >= 1:
-            human = ', '.join(sorted(list(lacks)))
-            raise RuntimeError(f'Target <{self.name}> lacks mendatory keys: {human}')
 
         start = datetime.now()
         result = self.processor.on_change(self._target_config, event)
@@ -89,11 +85,11 @@ class Target:
 
         info = []
 
-        if self._root_config.log.result:
+        if self._root_config.log.all or self._root_config.log.result:
             mes = 'SUCCEEDED' if result else 'FAILED'
             info.append(f'has {mes}')
 
-        if self._root_config.log.time:
+        if self._root_config.log.all or self._root_config.log.time:
             h = floor(diff / timedelta(hours=1))
             m = floor(diff / timedelta(minutes=1)) % 60
             s = floor(diff / timedelta(seconds=1)) % 60
@@ -131,7 +127,7 @@ class Target:
         return when == event.event_type
 
     def _log_filtered_event(self, event):
-        if self._root_config.log.filtered_events:
+        if self._root_config.log.all or self._root_config.log.filtered_events:
             print(f'Filtered event: {event}')
 
     @staticmethod
@@ -140,41 +136,34 @@ class Target:
         return re.compile(pattern).search
 
 
-class Config:
-    log: object
-    event: object
-    target: list
+class Config(AccessValidator):
+    _slots = ['log', 'event', 'target']
 
-    _raw_dict: dict
+    log: Log = None
+    event: Event = None
+    target: List[Target] = None
 
     def __init__(self, raw_dict):
-        self._raw_dict = raw_dict
+        # SUPER dirty hack ...
+        self.__annotations__['Log'] = Log
+        self.__annotations__.update({
+            'log': Log,
+            'event': Event,
+            'target': List[Target],
+        })
 
-        # Load Config.log
-        log = raw_dict.get('log', dict())
-        enable_all = log.get('all', False)
+        super().__init__('root', dict())
+        self.log = Log('log', raw_dict.get('log', dict()))
+        self.event = Event('event', raw_dict.get('event', dict()))
 
-        class Log:
-            all = enable_all
-            accepted_events = log.get('accepted_events', False) or enable_all
-            rate_limited_events = log.get('rate_limited_events', False) or enable_all
-            filtered_events = log.get('filtered_events', False) or enable_all
-            dispatched_events = log.get('dispatched_events', True) or enable_all
-            processor_output = log.get('processor_output', True) or enable_all
-            result = log.get('result', True) or enable_all
-            time = log.get('time', False) or enable_all
+        self.target = []
+        for proc_def in raw_dict.get('target', []):
+            proc = proc_def.get('processor', None)
+            if proc is None:
+                raise ValueError(f'The target definition "{proc_def.get("name", "(noname)")}" lacks "processor" key')
+            elif proc not in processors:
+                raise ValueError(f'Unknown processor: "{proc}"')
 
-        self.log = Log()
-
-        # Load Config.event
-        event = raw_dict.get('event', dict())
-
-        class Event:
-            rate_limit_duration = event.get('rate_limit_duration', 0.01)
-            ignore_events_while_run = event.get('ignore_events_while_run', True)
-
-        self.event = Event()
-
-        # Load Config.target
-        target = raw_dict.get('target', [])
-        self.target = [Target(self, r) for r in target]
+            procins = processors[proc](proc_def.get('name', '(noname)'), proc_def)
+            target = Target(self, procins)
+            self.target.append(target)
