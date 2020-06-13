@@ -3,13 +3,9 @@
 [[job]]
   name = "Linux"
   type = "make"  # invokes make
-  jobs = 8       # 8 jobs to run parallel
-
-  # triggers when something is modified
-  when = "modified"
-
-  # watch .c, .h, configs
-  glob = [
+  jobs = 0       # auto-detect the N of job workers
+  when = "modified"  # triggers when something is modified
+  glob = [  # watch .c, .h, configs
     '*.c',
     '*.h',
     '*config',

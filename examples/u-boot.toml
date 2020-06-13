@@ -4,7 +4,7 @@
   name = "U-Boot"
   type = "make"  # invokes make
   target = "u-boot.sb"  # make target
-  jobs = 8  # 8 jobs to run parallel
+  jobs = 0  # auto-detect the N of job workers
 
   when = "modified"  # triggers when something is modified
   regex = '.*\.([ch]|dts)$'  # watch .c, .h, and .dts
