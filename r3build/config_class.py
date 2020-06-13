@@ -6,14 +6,14 @@ from r3build.config_validator import AccessValidator
 
 class Log(AccessValidator):
     _slots = {
-        "time",
         "accepted_events",
-        "processor_output",
-        "result",
         "all",
-        "filtered_events",
-        "rate_limited_events",
         "dispatched_events",
+        "filtered_events",
+        "processor_output",
+        "rate_limited_events",
+        "result",
+        "time",
     }
     _required = set()
     all: bool = False
@@ -27,7 +27,7 @@ class Log(AccessValidator):
 
 
 class Event(AccessValidator):
-    _slots = {"rate_limit_duration", "ignore_events_while_run"}
+    _slots = {"ignore_events_while_run", "rate_limit_duration"}
     _required = set()
     rate_limit_duration: float = 0.01
     ignore_events_while_run: bool = True
@@ -35,17 +35,17 @@ class Event(AccessValidator):
 
 class Processor(AccessValidator):
     _slots = {
-        "regex_exclude",
-        "path",
         "glob",
-        "when",
-        "regex",
-        "name",
-        "processor",
         "glob_exclude",
+        "name",
+        "path",
+        "regex",
+        "regex_exclude",
+        "type",
+        "when",
     }
-    _required = {"processor"}
-    processor: str = ""
+    _required = {"type"}
+    type: str = ""
     name: str = "noname"
     when: Union[List[str], str] = ""
     path: str = "."
@@ -56,7 +56,7 @@ class Processor(AccessValidator):
 
 
 class ProcMake(Processor):
-    _slots = Processor._slots.union({"environment", "directory", "target", "jobs"})
+    _slots = Processor._slots.union({"directory", "environment", "jobs", "target"})
     _required = Processor._required.union(set())
     target: str = ""
     environment: Dict[str, str] = ""
@@ -65,7 +65,7 @@ class ProcMake(Processor):
 
 
 class ProcCommand(Processor):
-    _slots = Processor._slots.union({"environment", "command"})
+    _slots = Processor._slots.union({"command", "environment"})
     _required = Processor._required.union({"command"})
     command: str = ""
     environment: Dict[str, str] = ""
@@ -78,7 +78,7 @@ class ProcPytest(Processor):
 
 
 class ProcInternaltest(Processor):
-    _slots = Processor._slots.union(set())
+    _slots = Processor._slots.union({})
     _required = Processor._required.union(set())
 
 

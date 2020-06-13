@@ -143,6 +143,9 @@ def def2skel(de):
         doc.add(br)
 
     for name, props in processors.items():
+        if name == 'internaltest':
+            continue
+
         exs = []
         for key, value in [(t[0], t[1]) for t in props.items() if not t[0].startswith('__')]:
             vex = f'{key} ({repr(value.type)}) {" *REQUIRED* " if value.required else ""}\n'
@@ -229,7 +232,8 @@ def def2class(de):
         root_attrs.append((name, name.title()))
         sig = f'class {name.title()}(AccessValidator):'
         at, sl, rq = generate_class_attrs(section)
-        sl_text = f'_slots = {repr(sl)}'
+        sl_sorted = ", ".join(sorted(f'"{v}"' for v in sl))
+        sl_text = f'_slots = {{{sl_sorted}}}'
         rq_text = f'_required = {repr(rq)}'
         class_defs.append(f'{sig}\n    {sl_text}\n    {rq_text}\n{indent(lf.join(at), "    ")}')
 
@@ -245,12 +249,13 @@ def def2class(de):
             sig = f'class {name}(Processor):'
 
         at, sl, rq = generate_class_attrs(processor)
+        sl_sorted = ", ".join(sorted(f'"{v}"' for v in sl))
 
         if name == 'Processor':
-            sl_text = f'_slots = {repr(sl)}'
+            sl_text = f'_slots = {{{sl_sorted}}}'
             rq_text = f'_required = {repr(rq)}'
         else:
-            sl_text = f'_slots = Processor._slots.union({repr(sl)})'
+            sl_text = f'_slots = Processor._slots.union({{{sl_sorted}}})'
             rq_text = f'_required = Processor._required.union({repr(rq)})'
 
         class_defs.append(f'{sig}\n    {sl_text}\n    {rq_text}\n{indent(lf.join(at), "    ")}')
@@ -271,13 +276,10 @@ def def2class(de):
 
 def parse_section(section: dict):
     # Workaround not to use pop()
-    section_typ = Literalify(eval(section['type']))
-    del section['type']
     section_description = section['description'].strip()
     del section['description']
 
     out = {
-        '__type__': section_typ,
         '__description__': section_description,
     }
 

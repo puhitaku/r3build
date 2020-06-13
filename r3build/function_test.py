@@ -17,26 +17,26 @@ def instance(tmp):
     targets = [
         {
             'name': 'glob1',
-            'processor': 'internaltest',
+            'type': 'internaltest',
             'path': str(tmp),
             'glob': '*/glob1/*/*.txt',
         },
         {
             'name': 'glob2',
-            'processor': 'internaltest',
+            'type': 'internaltest',
             'path': str(tmp),
             'glob': '*/glob2/*/*.txt',
             'glob_exclude': '*/glob2/exclude/*.txt',
         },
         {
             'name': 'regex1',
-            'processor': 'internaltest',
+            'type': 'internaltest',
             'path': str(tmp),
             'regex': '.+/regex1/.+/[^.]+\.txt',
         },
         {
             'name': 'regex2',
-            'processor': 'internaltest',
+            'type': 'internaltest',
             'path': str(tmp),
             'regex': '.+/regex2/.+/[^.]+\.txt',
             'regex_exclude': '.+/regex2/exclude/[^.]+\.txt',

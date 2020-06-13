@@ -66,7 +66,7 @@ ignore_events_while_run = true
 #  - How the processor process things
 # ... and etc.
 
-# processor (str)  *REQUIRED*
+# type (str)  *REQUIRED*
 #  - The ID of the processor for the target.
 #  - To see the full list of processors, run `python -m r3build --processors`.
 #  - For processor-specific configs, see the following sections.
@@ -99,7 +99,7 @@ ignore_events_while_run = true
 #  - One or more regular expression patterns to exclude. The effect is opposite to `regex`.
 #  - The target won't be triggered if one or more file patterns match to it.
 
-processor = ""
+type = ""
 name = "noname"
 when = ""
 path = "."

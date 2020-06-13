@@ -72,10 +72,10 @@ description = """
 ... and etc.
 """
 
-processor.required = true
-processor.type = "str"
-processor.default = ""
-processor.description = """
+type.required = true
+type.type = "str"
+type.default = ""
+type.description = """
 The ID of the processor for the target.
 To see the full list of processors, run `python -m r3build --processors`.
 For processor-specific configs, see the following sections.

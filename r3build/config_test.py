@@ -7,17 +7,17 @@ def test_simple_validation():
     with pytest.raises(ValueError):
         p = Processor('', {})
 
-    p = Processor('', {'processor': ''})
+    p = Processor('', {'type': ''})
 
-    p.processor = 'foo'
-    assert p.processor == 'foo'
+    p.type = 'foo'
+    assert p.type == 'foo'
 
     with pytest.raises(TypeError):
-        p.processor = 1
+        p.type = 1
 
 
 def test_recursive_validation():
-    p = Processor('proc', {'processor': ''})
+    p = Processor('proc', {'type': ''})
 
     # Union[List[str], str]
     p.when = ['foo']
@@ -29,7 +29,7 @@ def test_recursive_validation():
     with pytest.raises(TypeError):
         p.when = 1
 
-    m = ProcMake('make', {'processor': 'make'})
+    m = ProcMake('make', {'type': 'make'})
 
     # Dict[str, str]
     m.environment = {'foo': '1'}
@@ -42,7 +42,7 @@ def test_recursive_validation():
 
 
 def test_access_control():
-    p = Processor('', {'processor': ''})
+    p = Processor('', {'type': ''})
 
     with pytest.raises(AttributeError):
         p.unknown = 3939

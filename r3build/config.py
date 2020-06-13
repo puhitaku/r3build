@@ -14,7 +14,7 @@ from r3build.config_validator import AccessValidator
 
 class Target:
     def __init__(self, root_config: Config, target_config: Processor):
-        pid = target_config.processor
+        pid = target_config.type
         p = available_processors.get(pid, None)
         if p is None:
             raise ValueError(f'Unknown processor: "{pid}"')
@@ -158,9 +158,9 @@ class Config(AccessValidator):
 
         self.target = []
         for proc_def in raw_dict.get('target', []):
-            proc = proc_def.get('processor', None)
+            proc = proc_def.get('type', None)
             if proc is None:
-                raise ValueError(f'The target definition "{proc_def.get("name", "(noname)")}" lacks "processor" key')
+                raise ValueError(f'The target definition "{proc_def.get("name", "(noname)")}" lacks "type" key')
             elif proc not in processors:
                 raise ValueError(f'Unknown processor: "{proc}"')
 

@@ -3,7 +3,7 @@ from r3build.cli import R3build
 
 def test_load_targets():
     d = {
-        'target': [{'name': 'foo', 'processor': 'internaltest',},],
+        'target': [{'name': 'foo', 'type': 'internaltest',},],
     }
     r3 = R3build(config_dict=d)
     assert r3.get_target('foo') is not None
