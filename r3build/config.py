@@ -108,7 +108,11 @@ class Job:
 
     def _filter_glob(self, pattern, event):
         if isinstance(pattern, list):
+            pattern = ['./' + p if not p.startswith('./') else p for p in pattern]
             return any(fnmatchcase(event.src_path, p) for p in pattern)
+
+        if not pattern.startswith('./'):
+            pattern = f'./{pattern}'
         return fnmatchcase(event.src_path, pattern)
 
     def _filter_regex(self, pattern, event):
