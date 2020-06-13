@@ -2,6 +2,9 @@
 black:
 	@black -t py38 -S .
 
+clean:
+	@rm -r $$(find . | grep pyc)
+
 watch:
 	@python -m r3build
 
