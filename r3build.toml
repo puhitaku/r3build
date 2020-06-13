@@ -7,5 +7,4 @@
   target = "r3build"
 
   when = ["modified"]
-  glob = ["./**/*.py", "./r3build.toml"]
-
+  glob = ["./**/*.py", "r3build.toml"]
