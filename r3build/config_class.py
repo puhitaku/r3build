@@ -10,7 +10,7 @@ class Log(AccessValidator):
         "all",
         "dispatched_events",
         "filtered_events",
-        "processor_output",
+        "job_output",
         "rate_limited_events",
         "result",
         "time",
@@ -21,7 +21,7 @@ class Log(AccessValidator):
     rate_limited_events: bool = False
     filtered_events: bool = False
     dispatched_events: bool = False
-    processor_output: bool = True
+    job_output: bool = True
     result: bool = True
     time: bool = True
 

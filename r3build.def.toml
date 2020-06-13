@@ -33,9 +33,9 @@ dispatched_events.type = "bool"
 dispatched_events.default = false
 dispatched_events.description = "Show events dispatched to processors."
 
-processor_output.type = "bool"
-processor_output.default = true
-processor_output.description = "Show the output of the executed processor."
+job_output.type = "bool"
+job_output.default = true
+job_output.description = "Show the output of the executed processor."
 
 result.type = "bool"
 result.default = true

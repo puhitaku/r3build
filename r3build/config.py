@@ -76,7 +76,7 @@ class Job:
             self._log_filtered_event(event)
             return False
 
-        if self._root_config.log.all or self._root_config.log.dispatched_events:
+        if self._root_config.log.dispatched_events:
             print(f'\n >> R3BUILD >> detected a change for job "{self.name}" >>\n')
 
         start = datetime.now()
@@ -85,11 +85,11 @@ class Job:
 
         info = []
 
-        if self._root_config.log.all or self._root_config.log.result:
+        if self._root_config.log.result:
             mes = 'SUCCEEDED' if result else 'FAILED'
             info.append(f'has {mes}')
 
-        if self._root_config.log.all or self._root_config.log.time:
+        if self._root_config.log.time:
             h = floor(diff / timedelta(hours=1))
             m = floor(diff / timedelta(minutes=1)) % 60
             s = floor(diff / timedelta(seconds=1)) % 60
@@ -127,7 +127,7 @@ class Job:
         return when == event.event_type
 
     def _log_filtered_event(self, event):
-        if self._root_config.log.all or self._root_config.log.filtered_events:
+        if self._root_config.log.filtered_events:
             print(f'Filtered event: {event}')
 
     @staticmethod
@@ -154,6 +154,12 @@ class Config(AccessValidator):
 
         super().__init__('root', dict())
         self.log = Log('log', raw_dict.get('log', dict()))
+        if self.log.all:
+            self.log.accepted_events = True
+            self.log.rate_limited_events = True
+            self.log.filtered_events = True
+            self.log.dispatched_events = True
+
         self.event = Event('event', raw_dict.get('event', dict()))
 
         self.job = []

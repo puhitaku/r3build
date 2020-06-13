@@ -26,7 +26,7 @@
 # dispatched_events (bool)
 #  - Show events dispatched to processors.
 #
-# processor_output (bool)
+# job_output (bool)
 #  - Show the output of the executed processor.
 #
 # result (bool)
@@ -40,7 +40,7 @@ accepted_events = false
 rate_limited_events = false
 filtered_events = false
 dispatched_events = false
-processor_output = true
+job_output = true
 result = true
 time = true
 

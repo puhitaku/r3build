@@ -19,7 +19,7 @@ class Processor:
 
     def _helper_run(self, cmd, **kwargs):
         print(f'Running command: {cmd}')
-        if self.root_config.log.processor_output:
+        if self.root_config.log.job_output:
             print('Command output:')
         else:
             kwargs['stdout'] = subprocess.DEVNULL
