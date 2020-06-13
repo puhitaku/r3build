@@ -4,7 +4,7 @@
   name = "Classifier"
   type = "command"  # invokes generic command
   when = ["created", "modified"]
-  glob = ["*.jpg"]
+  glob = ["./*.jpg"]
   command = """
   export FILENAME=$(basename $R3_FILENAME)
   export INDEX=$(echo $FILENAME | cut -b1)
