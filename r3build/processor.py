@@ -69,7 +69,7 @@ class PytestProcessor(Processor):
     def on_change(self, config, event):
         import pytest
 
-        pytest_target = config['target']
+        pytest_target = config.target
         modules = [v for k, v in sys.modules.items() if k.startswith(pytest_target)]
         for m in modules:
             importlib.reload(m)
