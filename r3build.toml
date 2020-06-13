@@ -3,7 +3,7 @@
 
 [[target]]
   name = "Tests"
-  processor = "pytest"
+  type = "pytest"
   target = "r3build"
 
   when = ["modified"]

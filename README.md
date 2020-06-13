@@ -33,7 +33,7 @@ How to use (TL;DR)
 $ cat r3build.toml
 [[target]]
 name = "Build them all"
-processor = "make"
+type = "make"
 when = ["modified"]
 glob = ["*.c", "*.h"]
 glob_exclude = ["extra/*", "extra/**/*"]
@@ -47,7 +47,7 @@ Here's a yet another general one for who is not using `make`.
 $ cat r3build.toml
 [[target]]
 name = "Run it"
-processor = "command"
+type = "command"
 command = "python -m foobar"
 when = ["modified"]
 glob = ["./foobar/*.py", "./foobar/**/*.py"]
@@ -76,10 +76,10 @@ Here's an example of `r3build.toml` to run `make` every time you edit your C cod
 ```
 [[target]]
 name = "Build them all"
-processor = "make"
+type = "make"
 ```
 
-The `[[target]]` line means that it's an item in `target` array. The `name` config means that the name of this `target` is "Build them all". The last `processor` config means that `make` processor will be invoked when this `target` gets triggered. `Processor` does not mean a shell command but a purpose-specific implementations for several types of build targets.
+The `[[target]]` line means that it's an item in `target` array. The `name` config means that the name of this `target` is "Build them all". The last `type` config means that this target invokes `make` command when this `target` gets triggered. `Processor` does not mean a shell command but a purpose-specific implementations for several types of build targets.
 
 It's enough to get r3build watch your code. But it'll be annoying to you because it'll run `make` for ALL events
 that occur to your code -- when they are "created", "deleted", "moved" and "modified."
@@ -89,7 +89,7 @@ Here's an additional one to "filter" the events; the `when` key.
 ```
 [[target]]
 name = "Build them all"
-processor = "make"
+type = "make"
 when = ["modified"]
 ```
 
@@ -102,7 +102,7 @@ It's super-easy to filter them only for `.c` and `.h` code. Here's how:
 ```
 [[target]]
 name = "Build them all"
-processor = "make"
+type = "make"
 when = ["modified"]
 glob = ["*.c", "*.h"]
 ```
@@ -113,7 +113,7 @@ Here's one more thing to good to know. "Exclude" keys.
 ```
 [[target]]
 name = "Build them all"
-processor = "make"
+type = "make"
 when = ["modified"]
 glob = ["*.c", "*.h"]
 glob_exclude = ["extra/*", "extra/**/*"]
@@ -121,7 +121,7 @@ glob_exclude = ["extra/*", "extra/**/*"]
 
 The `glob_exclude` configuration will ignore the changes occurred in `extra` directory.
 
-For other processors and configurations, see [r3build.skeleton.toml](r3build.skeleton.toml) (and the code of course :wink:)
+For more details, see [r3build.skeleton.toml](r3build.skeleton.toml) (and the code of course :wink:)
 
 
 Confirmed platforms

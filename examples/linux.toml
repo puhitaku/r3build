@@ -2,8 +2,8 @@
 
 [[target]]
   name = "Linux"
-  processor = "make"  # make processor
-  jobs = 8            # 8 jobs to run parallel
+  type = "make"  # invokes make
+  jobs = 8       # 8 jobs to run parallel
 
   # triggers when something is modified
   when = "modified"

@@ -18,10 +18,10 @@ class ConfigOption(click.types.StringParamType):
     type=ConfigOption(),
 )
 @click.option('-v', '--verbose', is_flag=True)
-@click.option('--processors', is_flag=True)
-def main(config, verbose, processors):
-    if processors:
-        print('Available Processor ID (a.k.a. job type):')
+@click.option('--list-types', is_flag=True)
+def main(config, verbose, list_types):
+    if list_types:
+        print('Available Job Types (a.k.a. processor IDs):')
         print(''.join(f'* {i}\n' for i in available_processors.keys() if i != 'internaltest'))
         return
 

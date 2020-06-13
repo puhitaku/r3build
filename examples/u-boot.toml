@@ -2,7 +2,7 @@
 
 [[target]]
   name = "U-Boot"
-  processor = "make"  # make processor
+  type = "make"  # invokes make
   target = "u-boot.sb"  # make target
   jobs = 8  # 8 jobs to run parallel
 
