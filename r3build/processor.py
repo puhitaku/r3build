@@ -5,6 +5,8 @@ import sys
 from multiprocessing import cpu_count
 from typing import Set
 
+from watchdog.events import FileSystemEvent
+
 
 class Processor:
     id: str
@@ -27,9 +29,14 @@ class Processor:
         return subprocess.run(cmd, **kwargs)
 
     @staticmethod
-    def _helper_merge_env(config):
+    def _helper_merge_env(config, event: FileSystemEvent):
         env = os.environ
-        env.update(config.get('environment', dict()))
+        env.update(config.environment)
+        env.update({
+            'R3_EVENT': event.event_type,
+            'R3_FILENAME': event.src_path,
+            'R3_IS_DIRECTORY': '1' if event.is_directory else '0',
+        })
         return env
 
 
@@ -38,20 +45,20 @@ class MakeProcessor(Processor):
     optional_keys = {'target', 'environment', 'jobs'}
 
     def on_change(self, config, event):
-        jobs = config.get('jobs', 'auto')
-        if jobs == 'auto':
+        jobs = config.jobs
+        if jobs == 0:
             jobs = str(cpu_count())
         else:
             jobs = str(jobs)
 
-        target = config.get('target', '')
+        target = config.target
 
-        directory = config.get('directory', '')
+        directory = config.directory
         if directory:
             directory = f'-C {directory}'
 
         cmd = f'make -j{jobs} {directory} {target}'.strip()
-        env = self._helper_merge_env(config)
+        env = self._helper_merge_env(config, event)
         return self._helper_run(cmd, shell=True, env=env).returncode == 0
 
 
@@ -76,8 +83,8 @@ class CommandProcessor(Processor):
     optional_keys = {'environment'}
 
     def on_change(self, config, event):
-        cmd = config.get('command', None)
-        env = self._helper_merge_env(config)
+        cmd = config.command
+        env = self._helper_merge_env(config, event)
         return self._helper_run(cmd, shell=True, env=env).returncode == 0
 
 
