@@ -14,7 +14,7 @@ def tmp(tmpdir_factory):
 
 @pytest.fixture(scope='session')
 def instance(tmp):
-    targets = [
+    jobs = [
         {
             'name': 'glob1',
             'type': 'internaltest',
@@ -45,7 +45,7 @@ def instance(tmp):
     log = {
         'all': True,
     }
-    r3 = R3build(config_dict={'target': targets, 'log': log})
+    r3 = R3build(config_dict={'job': jobs, 'log': log})
     r3.run()
     return r3
 
@@ -65,86 +65,86 @@ def write(path):
 
 
 def test_glob1(instance, tmp):
-    target = instance.get_target('glob1')
-    target.processor.clear_history()
+    job = instance.get_job('glob1')
+    job.processor.clear_history()
 
     touch(tmp / 'glob1/bar.txt')
-    assert len(target.processor.history) == 0
+    assert len(job.processor.history) == 0
 
     touch(tmp / 'glob1/foo/bar.txt')
-    assert len(target.processor.history) == 1
-    ev = target.processor.history[0]
+    assert len(job.processor.history) == 1
+    ev = job.processor.history[0]
     assert ev.src_path == str(tmp / 'glob1/foo/bar.txt')
     assert ev.event_type == 'created'
 
     write(tmp / 'glob1/foo/bar.txt')
-    assert len(target.processor.history) == 2
-    ev = target.processor.history[1]
+    assert len(job.processor.history) == 2
+    ev = job.processor.history[1]
     assert ev.src_path == str(tmp / 'glob1/foo/bar.txt')
     assert ev.event_type == 'modified'
 
 
 def test_glob2(instance, tmp):
-    target = instance.get_target('glob2')
-    target.processor.clear_history()
+    job = instance.get_job('glob2')
+    job.processor.clear_history()
 
     touch(tmp / 'glob2/foo/bar.txt')
-    assert len(target.processor.history) == 1
-    ev = target.processor.history[0]
+    assert len(job.processor.history) == 1
+    ev = job.processor.history[0]
     assert ev.src_path == str(tmp / 'glob2/foo/bar.txt')
     assert ev.event_type == 'created'
 
     touch(tmp / 'glob2/exclude/bar.txt')
-    assert len(target.processor.history) == 1
+    assert len(job.processor.history) == 1
 
     write(tmp / 'glob2/foo/bar.txt')
-    assert len(target.processor.history) == 2
-    ev = target.processor.history[1]
+    assert len(job.processor.history) == 2
+    ev = job.processor.history[1]
     assert ev.src_path == str(tmp / 'glob2/foo/bar.txt')
     assert ev.event_type == 'modified'
 
     write(tmp / 'glob2/exclude/bar.txt')
-    assert len(target.processor.history) == 2
+    assert len(job.processor.history) == 2
 
 
 def test_regex1(instance, tmp):
-    target = instance.get_target('regex1')
-    target.processor.clear_history()
+    job = instance.get_job('regex1')
+    job.processor.clear_history()
 
     touch(tmp / 'regex1/bar.txt')
-    assert len(target.processor.history) == 0
+    assert len(job.processor.history) == 0
 
     touch(tmp / 'regex1/foo/bar.txt')
-    assert len(target.processor.history) == 1
-    ev = target.processor.history[0]
+    assert len(job.processor.history) == 1
+    ev = job.processor.history[0]
     assert ev.src_path == str(tmp / 'regex1/foo/bar.txt')
     assert ev.event_type == 'created'
 
     write(tmp / 'regex1/foo/bar.txt')
-    assert len(target.processor.history) == 2
-    ev = target.processor.history[1]
+    assert len(job.processor.history) == 2
+    ev = job.processor.history[1]
     assert ev.src_path == str(tmp / 'regex1/foo/bar.txt')
     assert ev.event_type == 'modified'
 
 
 def test_regex2(instance, tmp):
-    target = instance.get_target('regex2')
-    target.processor.clear_history()
+    job = instance.get_job('regex2')
+    job.processor.clear_history()
 
     touch(tmp / 'regex2/foo/bar.txt')
-    assert len(target.processor.history) == 1
-    ev = target.processor.history[0]
+    assert len(job.processor.history) == 1
+    ev = job.processor.history[0]
     assert ev.src_path == str(tmp / 'regex2/foo/bar.txt')
     assert ev.event_type == 'created'
 
     touch(tmp / 'regex2/exclude/bar.txt')
-    assert len(target.processor.history) == 1
+    assert len(job.processor.history) == 1
 
     write(tmp / 'regex2/foo/bar.txt')
-    assert len(target.processor.history) == 2
-    ev = target.processor.history[1]
+    assert len(job.processor.history) == 2
+    ev = job.processor.history[1]
     assert ev.src_path == str(tmp / 'regex2/foo/bar.txt')
     assert ev.event_type == 'modified'
 
     write(tmp / 'regex2/exclude/bar.txt')
-    assert len(target.processor.history) == 2
+    assert len(job.processor.history) == 2

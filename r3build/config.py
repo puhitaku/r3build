@@ -12,22 +12,22 @@ from r3build.config_class import Log, Event, Processor, processors
 from r3build.config_validator import AccessValidator
 
 
-class Target:
-    def __init__(self, root_config: Config, target_config: Processor):
-        pid = target_config.type
+class Job:
+    def __init__(self, root_config: Config, job_config: Processor):
+        pid = job_config.type
         p = available_processors.get(pid, None)
         if p is None:
             raise ValueError(f'Unknown processor: "{pid}"')
 
         self._processor = p(root_config)
         self._root_config = root_config
-        self._target_config = target_config
+        self._job_config = job_config
 
-    """Common target properties"""
+    """Common job properties"""
 
     @property
     def name(self):
-        return self._target_config.name
+        return self._job_config.name
 
     @property
     def processor(self):
@@ -35,27 +35,27 @@ class Target:
 
     @property
     def when(self):
-        return self._target_config.when
+        return self._job_config.when
 
     @property
     def path(self):
-        return self._target_config.path
+        return self._job_config.path
 
     @property
     def glob(self):
-        return self._target_config.glob
+        return self._job_config.glob
 
     @property
     def glob_exclude(self):
-        return self._target_config.glob_exclude
+        return self._job_config.glob_exclude
 
     @property
     def regex(self):
-        return self._target_config.regex
+        return self._job_config.regex
 
     @property
     def regex_exclude(self):
-        return self._target_config.regex_exclude
+        return self._job_config.regex_exclude
 
     """Event dispatch function called from main loop"""
 
@@ -77,10 +77,10 @@ class Target:
             return False
 
         if self._root_config.log.all or self._root_config.log.dispatched_events:
-            print(f'\n >> R3BUILD >> detected a change for target "{self.name}" >>\n')
+            print(f'\n >> R3BUILD >> detected a change for job "{self.name}" >>\n')
 
         start = datetime.now()
-        result = self.processor.on_change(self._target_config, event)
+        result = self.processor.on_change(self._job_config, event)
         diff = datetime.now() - start
 
         info = []
@@ -100,7 +100,7 @@ class Target:
 
         if info:
             info = ', '.join(info)
-            print(f'\n >> R3BUILD >> target "{self.name}" {info} >>\n')
+            print(f'\n >> R3BUILD >> job "{self.name}" {info} >>\n')
 
         return True
 
@@ -137,11 +137,11 @@ class Target:
 
 
 class Config(AccessValidator):
-    _slots = ['log', 'event', 'target']
+    _slots = ['log', 'event', 'job']
 
     log: Log = None
     event: Event = None
-    target: List[Target] = None
+    job: List[Job] = None
 
     def __init__(self, raw_dict):
         # SUPER dirty hack ...
@@ -149,21 +149,21 @@ class Config(AccessValidator):
         self.__annotations__.update({
             'log': Log,
             'event': Event,
-            'target': List[Target],
+            'job': List[Job],
         })
 
         super().__init__('root', dict())
         self.log = Log('log', raw_dict.get('log', dict()))
         self.event = Event('event', raw_dict.get('event', dict()))
 
-        self.target = []
-        for proc_def in raw_dict.get('target', []):
-            proc = proc_def.get('type', None)
+        self.job = []
+        for job_def in raw_dict.get('job', []):
+            proc = job_def.get('type', None)
             if proc is None:
-                raise ValueError(f'The target definition "{proc_def.get("name", "(noname)")}" lacks "type" key')
+                raise ValueError(f'The job definition "{job_def.get("name", "(noname)")}" lacks "type" key')
             elif proc not in processors:
                 raise ValueError(f'Unknown processor: "{proc}"')
 
-            procins = processors[proc](proc_def.get('name', '(noname)'), proc_def)
-            target = Target(self, procins)
-            self.target.append(target)
+            procins = processors[proc](job_def.get('name', '(noname)'), job_def)
+            job = Job(self, procins)
+            self.job.append(job)

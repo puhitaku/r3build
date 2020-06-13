@@ -1,6 +1,6 @@
 # Example: Linux kernel for NXP i.MX28 SoCs w/ cross compile
 
-[[target]]
+[[job]]
   name = "Linux"
   type = "make"  # invokes make
   jobs = 8       # 8 jobs to run parallel
@@ -17,9 +17,3 @@
 
   environment.ARCH = "arm"
   environment.CROSS_COMPILE = "arm-linux-gnueabi-"
-
-  # Alternative way:
-  #
-  # [target.environment]
-  # ARCH = "arm"
-  # CROSS_COMPILE = "arm-linux-gnueabi-"

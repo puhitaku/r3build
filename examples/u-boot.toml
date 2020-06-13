@@ -1,6 +1,6 @@
 # Example: U-Boot for NXP i.MX28 SoCs w/ cross compile
 
-[[target]]
+[[job]]
   name = "U-Boot"
   type = "make"  # invokes make
   target = "u-boot.sb"  # make target
@@ -11,9 +11,3 @@
 
   environment.ARCH = "arm"
   environment.CROSS_COMPILE = "arm-linux-gnueabi-"
-
-  # Alternative way:
-  #
-  # [target.environment]
-  # ARCH = "arm"
-  # CROSS_COMPILE = "arm-linux-gnueabi-"

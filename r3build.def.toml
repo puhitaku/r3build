@@ -43,7 +43,7 @@ result.description = "Show if the run was successful or not."
 
 time.type = "bool"
 time.default = true
-time.description = "Show target's execution time."
+time.description = "Show job's execution time."
 
 
 [event]
@@ -63,9 +63,9 @@ Disabling this flag may result in a never-ending execution loop. Disable with ca
 """
 
 
-[target.common]
+[job.common]
 description = """
-`target` array-of-tables defines jobs.
+`job` array-of-tables defines jobs.
  - What to watch (match and exclude files with glob and regex)
  - What processor to execute
  - How the processor process things
@@ -76,14 +76,14 @@ type.required = true
 type.type = "str"
 type.default = ""
 type.description = """
-The ID of the processor for the target.
+The ID of the processor for the job.
 To see the full list of processors, run `python -m r3build --processors`.
 For processor-specific configs, see the following sections.
 """
 
 name.type = "str"
 name.default = "noname"
-name.description = "Human-readable name of the target."
+name.description = "Human-readable name of the job."
 
 when.type = "Union[List[str], str]"
 when.default = ""
@@ -104,32 +104,32 @@ glob.type = "Union[List[str], str]"
 glob.default = ""
 glob.description = """
 One or more glob patterns to match the file path.
-The target will be triggered if one or more patterns match to it.
+The job will be triggered if one or more patterns match to it.
 """
 
 glob_exclude.type = "Union[List[str], str]"
 glob_exclude.default = ""
 glob_exclude.description = """
 One or more glob patterns to exclude. The effect is opposite to `glob`.
-The target won't be triggered if one or more patterns match to it.
+The job won't be triggered if one or more patterns match to it.
 """
 
 regex.type = "Union[List[str], str]"
 regex.default = ""
 regex.description = """
 One or more regular expression patterns to match the file path.
-The target will be triggered if one or more patterns match to it.
+The job will be triggered if one or more patterns match to it.
 """
 
 regex_exclude.type = "Union[List[str], str]"
 regex_exclude.default = ""
 regex_exclude.description = """
 One or more regular expression patterns to exclude. The effect is opposite to `regex`.
-The target won't be triggered if one or more file patterns match to it.
+The job won't be triggered if one or more file patterns match to it.
 """
 
 
-[target.make]
+[job.make]
 description = "`make` processor runs a target in a Makefile."
 
 target.type = "str"
@@ -155,7 +155,7 @@ directory.default = ""
 directory.description = "The directory to read Makefile in. Equivalent to `make -C` option."
 
 
-[target.command]
+[job.command]
 description = "`command` processor invokes a command."
 
 # TODO: support template to pass filename and more
@@ -171,7 +171,7 @@ Specify additional environment variables.
 By default, r3build inherits the parent's envs.
 """
 
-[target.pytest]
+[job.pytest]
 description = "`pytest` processor runs pytest on a package (directory) or a module (file)."
 
 target.required = true
@@ -183,5 +183,5 @@ This string is passed to pytest.main() and also used for reloading Python module
 For an advanced use like passing arbitrary arguments to pytest, please use `command` processor.
 """
 
-[target.internaltest]
+[job.internaltest]
 description = "`_test` processor for testing purpose."

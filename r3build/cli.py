@@ -7,7 +7,7 @@ from r3build.config import Config
 class R3build:
     """The core implementation of r3build.
 
-    It parepares a watcher, targets and processors as described in the config
+    It parepares a watcher, jobs and processors as described in the config
     from a TOML or a dict.
 
     Preparation is finished in the __init__ and user has to call run() to
@@ -37,23 +37,23 @@ class R3build:
 
     def run(self):
         # Register paths to watch
-        paths = {target.path for target in self.config.target}
+        paths = {job.path for job in self.config.job}
         for path in paths:
             self.watcher.add_path(path)
 
         # Callback for filesystem events
         def _invoke(event):
             accepted = False
-            for target in self.config.target:
-                accepted |= target.dispatch(event)
+            for job in self.config.job:
+                accepted |= job.dispatch(event)
             return accepted
 
         # Register callback and start asynchronous watcher
         self.watcher.callback = _invoke
         self.watcher.start()
 
-    def get_target(self, name):
-        for target in self.config.target:
-            if target.name == name:
-                return target
+    def get_job(self, name):
+        for job in self.config.job:
+            if job.name == name:
+                return job
         return None

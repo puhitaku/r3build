@@ -33,7 +33,7 @@
 #  - Show if the run was successful or not.
 #
 # time (bool)
-#  - Show target's execution time.
+#  - Show job's execution time.
 
 all = false
 accepted_events = false
@@ -59,20 +59,20 @@ rate_limit_duration = 0.01
 ignore_events_while_run = true
 
 
-[[target]]
-# `target` array-of-tables defines jobs.
+[[job]]
+# `job` array-of-tables defines jobs.
 #  - What to watch (match and exclude files with glob and regex)
 #  - What processor to execute
 #  - How the processor process things
 # ... and etc.
 
 # type (str)  *REQUIRED*
-#  - The ID of the processor for the target.
+#  - The ID of the processor for the job.
 #  - To see the full list of processors, run `python -m r3build --processors`.
 #  - For processor-specific configs, see the following sections.
 #
 # name (str)
-#  - Human-readable name of the target.
+#  - Human-readable name of the job.
 #
 # when (Union[List[str], str])
 #  - One or more types of events to trigger this job.
@@ -85,19 +85,19 @@ ignore_events_while_run = true
 #
 # glob (Union[List[str], str])
 #  - One or more glob patterns to match the file path.
-#  - The target will be triggered if one or more patterns match to it.
+#  - The job will be triggered if one or more patterns match to it.
 #
 # glob_exclude (Union[List[str], str])
 #  - One or more glob patterns to exclude. The effect is opposite to `glob`.
-#  - The target won't be triggered if one or more patterns match to it.
+#  - The job won't be triggered if one or more patterns match to it.
 #
 # regex (Union[List[str], str])
 #  - One or more regular expression patterns to match the file path.
-#  - The target will be triggered if one or more patterns match to it.
+#  - The job will be triggered if one or more patterns match to it.
 #
 # regex_exclude (Union[List[str], str])
 #  - One or more regular expression patterns to exclude. The effect is opposite to `regex`.
-#  - The target won't be triggered if one or more file patterns match to it.
+#  - The job won't be triggered if one or more file patterns match to it.
 
 type = ""
 name = "noname"
@@ -109,7 +109,7 @@ regex = ""
 regex_exclude = ""
 
 
-[[target]]  # Properties specific to `make` processor
+[[job]]  # Properties specific to `make` processor
 # `make` processor runs a target in a Makefile.
 
 # target (str)
@@ -132,7 +132,7 @@ jobs = 0
 directory = ""
 
 
-[[target]]  # Properties specific to `command` processor
+[[job]]  # Properties specific to `command` processor
 # `command` processor invokes a command.
 
 # command (str)  *REQUIRED*
@@ -146,7 +146,7 @@ command = ""
 environment = ""
 
 
-[[target]]  # Properties specific to `pytest` processor
+[[job]]  # Properties specific to `pytest` processor
 # `pytest` processor runs pytest on a package (directory) or a module (file).
 
 # target (str)  *REQUIRED*

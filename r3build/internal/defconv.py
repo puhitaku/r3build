@@ -95,7 +95,7 @@ def cls(f):
 
 def def2skel(de):
     sections = {section: parse_section(de[section]) for section in ['log', 'event']}
-    processors = {name: parse_section(processor) for name, processor in de['target'].items()}
+    processors = {name: parse_section(processor) for name, processor in de['job'].items()}
 
     def add_mlc(s, blank=True):
         for c in s.strip().split('\n'):
@@ -127,7 +127,7 @@ def def2skel(de):
         comment = '\n# ' + props["__description__"].replace('\n', '\n# ') + '\n\n# ' + '\n# '.join(exs)
         trivia = tk.items.Trivia(comment_ws=" ", comment=comment)
 
-        if name == 'target':
+        if name == 'job':
             section = tk.api.AoT([])
             table = tk.api.Table(tk.api.Container(), trivia, False)
             for key, value in [(t[0], t[1]) for t in props.items() if not t[0].startswith('__')]:
@@ -168,7 +168,7 @@ def def2skel(de):
         section = tk.api.AoT([])
         section.append(table)
 
-        doc.add('target', section)
+        doc.add('job', section)
 
     print(tk.dumps(doc).strip())
 
@@ -187,7 +187,7 @@ processors = {processors}
 
 def def2model(de):
     sections = {section: parse_section(de[section]) for section in ['log', 'event']}
-    processors = {name: parse_section(processor) for name, processor in de['target'].items()}
+    processors = {name: parse_section(processor) for name, processor in de['job'].items()}
 
     mode = FileMode(
         target_versions={TargetVersion.PY36},
@@ -237,10 +237,10 @@ def def2class(de):
         rq_text = f'_required = {repr(rq)}'
         class_defs.append(f'{sig}\n    {sl_text}\n    {rq_text}\n{indent(lf.join(at), "    ")}')
 
-    proc_common = de['target']['common']
-    del de['target']['common']
+    proc_common = de['job']['common']
+    del de['job']['common']
     procs = {'Processor': parse_section(proc_common)}
-    procs.update({f'Proc{name.title()}': parse_section(processor) for name, processor in de['target'].items()})
+    procs.update({f'Proc{name.title()}': parse_section(processor) for name, processor in de['job'].items()})
 
     for name, processor in procs.items():
         if name == 'Processor':
@@ -260,7 +260,7 @@ def def2class(de):
 
         class_defs.append(f'{sig}\n    {sl_text}\n    {rq_text}\n{indent(lf.join(at), "    ")}')
 
-    procsl = [f"'{name}': Proc{name.title()}" for name in de['target'].keys()]
+    procsl = [f"'{name}': Proc{name.title()}" for name in de['job'].keys()]
     class_defs.append(f'processors = {{{", ".join(procsl)}}}')
 
     joined = def2class_template.format(body='\n\n\n'.join(class_defs))
