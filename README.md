@@ -150,6 +150,30 @@ Following variables are added when jobs get launched. See [examples](examples) f
     - `1`: Directory
 
 
+Q&A
+---
+
+#### Q. I wrote regex rules but nothing happens even it's modified... How to debug it?
+
+Enabling Verbose mode with `-v` flag or enabling all logs will provide a way to analyze it.
+
+```
+$ r3build -v
+```
+
+```
+[log]
+all = true
+```
+
+`-v` and `log.all = true` are equivalent.
+
+#### Q. Where are the specs of regex and glob rules?
+
+We use [`re` package](https://docs.python.org/ja/3/library/re.html) for regex
+and [`fnmatchcase()` from `fnmatch` package](https://docs.python.org/ja/3/library/fnmatch.html#fnmatch.fnmatchcase)
+for glob. Please refer those documents.
+
 Confirmed platforms
 -------------------
 
