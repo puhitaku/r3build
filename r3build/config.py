@@ -41,13 +41,27 @@ class Job:
     def path(self):
         return self._job_config.path
 
+    def _glob_relative(self, g):
+        if not g:
+            return g
+
+        if g.startswith('/'):
+            return g
+        return f'{self.path}/{g}'
+
     @property
     def glob(self):
-        return self._job_config.glob
+        g = self._job_config.glob
+        if isinstance(g, list):
+            return [self._glob_relative(p) for p in g]
+        return self._glob_relative(g)
 
     @property
     def glob_exclude(self):
-        return self._job_config.glob_exclude
+        g = self._job_config.glob_exclude
+        if isinstance(g, list):
+            return [self._glob_relative(p) for p in g]
+        return self._glob_relative(g)
 
     @property
     def regex(self):
