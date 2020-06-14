@@ -1,4 +1,4 @@
 click
-toml
+tomlkit
 watchdog
 termcolor

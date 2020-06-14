@@ -1,4 +1,6 @@
-import toml
+import json
+
+import tomlkit
 
 from r3build import watcher
 from r3build.config import Config
@@ -26,7 +28,9 @@ class R3build:
         # Load the config from toml
         if config_fn:
             with open(config_fn) as raw:
-                raw = toml.load(raw)
+                raw = tomlkit.loads(raw.read())
+                j = json.dumps(raw)
+                raw = json.loads(j)
         # Or from prepared dict
         elif config_dict:
             raw = config_dict
