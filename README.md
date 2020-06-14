@@ -155,8 +155,9 @@ Confirmed platforms
 
  - Python 3.8.3 + Debian Linux 10 (Buster)
  - Python 3.8.3 + macOS 10.14.6 Mojave
+ - Python 3.8.3 + macOS 10.15.4 Catalina
 
-It should work on any platform with Python 3.6+.
+It should work on any platform with Python 3.7+.
 
 
 Motivation
