@@ -167,6 +167,12 @@ I used to use [joh/when-changed](https://github.com/joh/when-changed). This was 
 To achieve the smart detection, I thought of a well-structured configuration file that describes its behavior and finally I got the concept of r3build.
 
 
+Contribute
+----------
+
+See [here](CONTRIBUTING.md) for contribution rules.
+
+
 License and Copyright
 ---------------------
 
