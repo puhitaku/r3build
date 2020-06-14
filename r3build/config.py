@@ -46,11 +46,15 @@ class Job:
         return self._job_config.path
 
     def _glob_relative(self, g):
+        # If no pattern is specified, return as-is
         if not g:
             return g
 
-        if g.startswith('/'):
+        if g.startswith('/') or g.startswith(self.path):
+            # If the pattern is absolute or starts with the job path, return as-is
             return g
+
+        # The pattern seems to be relative, add job path
         return f'{self.path}/{g}'
 
     @property
