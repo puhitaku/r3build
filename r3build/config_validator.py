@@ -55,9 +55,6 @@ class AccessValidator:
         value_typ = type(value)
         t_origin, t_args = cls._decompose(expect_typ)
 
-        if t_origin == dict:
-            print()
-
         if t_origin != Union and value_typ != t_origin:
             return False  # Completely different
 
