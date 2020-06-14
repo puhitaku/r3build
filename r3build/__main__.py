@@ -17,8 +17,8 @@ class ConfigOption(click.types.StringParamType):
     help='Configuration file. (default = r3build.toml)',
     type=ConfigOption(),
 )
-@click.option('-v', '--verbose', is_flag=True)
-@click.option('--list-types', is_flag=True)
+@click.option('-v', '--verbose', help='Verbose mode (equivalent to `log.all = true` in config)', is_flag=True)
+@click.option('--list-types', help='List available job types', is_flag=True)
 def main(config, verbose, list_types):
     if list_types:
         print('Available Job Types (a.k.a. processor IDs):')
