@@ -26,14 +26,19 @@ class R3build:
         # Load the config from toml
         if config_fn:
             with open(config_fn) as raw:
-                self.config = Config(toml.load(raw))
+                raw = toml.load(raw)
         # Or from prepared dict
         elif config_dict:
-            self.config = Config(config_dict)
+            raw = config_dict
         else:
             raise RuntimeError('Specify config file or config dict')
 
-        self.config.log.all |= verbose
+        log = raw.get("log", dict())
+        lall = log.get("all", False)
+        log["all"] = lall or verbose
+        raw["log"] = log
+
+        self.config = Config(raw)
         self.watcher = watcher.Watcher(self.config, Prompter(self.config))
 
     def run(self):
