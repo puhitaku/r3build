@@ -10,17 +10,15 @@ Preface
 -------
 
 r3build _[rìːbíld]_ is yet another smart file watcher that helps you develop something.
-The most notable thing is the easy but powerful configuration system. It will enable you to install a
+The most notable thing is the simple and powerful configuration system. It will enable you to install a
 minimal watcher for the first step and also to grow the watcher to handle a wide range of file events.
 
 
 Install
 -------
 
-r3build is not uploaded to PyPI yet. Please run the following command to install it.
-
 ```
-$ pip install git+https://github.com/puhitaku/r3build
+$ pip install r3build
 ```
 
 
@@ -129,11 +127,27 @@ The `glob_exclude` configuration will ignore the changes occurred in `extra` dir
 
 
 Spec of r3build.toml
------------------
+--------------------
 
 See [r3build.skeleton.toml](r3build.skeleton.toml) for available configurations.
 
 The full example of r3build.toml is not yet described but simpler examples are in [examples](examples).
+
+
+Environment variables
+---------------------
+
+Following variables are added when jobs get launched. See [examples](examples) for usage.
+
+ - `$R3_EVENT`: event type
+    - `moved`
+    - `deleted`
+    - `created`
+    - `modified`
+ - `$R3_FILENAME`: file name
+ - `$R3_IS_DIRECTORY`: if it's a directory or not
+    - `0`: Not directory
+    - `1`: Directory
 
 
 Confirmed platforms
