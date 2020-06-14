@@ -1,7 +1,10 @@
-[[rule]]
-  name = "Tests"
-  processor = "command"
-  only = ["modified"]
-  glob = "./**/*.py"
-  command = "pytest"
+[log]
+  time = true
 
+[[job]]
+  name = "Tests"
+  type = "pytest"
+  target = "r3build"
+
+  when = ["modified"]
+  glob = ["./**/*.py", "r3build.toml"]

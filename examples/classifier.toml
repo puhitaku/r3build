@@ -1,0 +1,13 @@
+# Example: Move detected jpg files into index directories.
+
+[[job]]
+  name = "Classifier"
+  type = "command"  # invokes generic command
+  when = ["created", "modified"]
+  glob = ["./*.jpg"]
+  command = """
+  export FILENAME=$(basename $R3_FILENAME)
+  export INDEX=$(echo $FILENAME | cut -b1)
+  mkdir -p $INDEX
+  mv $FILENAME ./$INDEX/
+  """

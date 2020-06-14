@@ -1,13 +1,15 @@
 from __future__ import annotations
 
-import functools
 import threading
 import time
 from datetime import datetime
-from typing import Any, Callable, List, Set
+from typing import Callable, Dict
 
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
+
+from r3build.config import Config
+from r3build.prompter import Prompter
 
 
 class EventBuffer:
@@ -54,19 +56,23 @@ class Watcher(FileSystemEventHandler, threading.Thread):
     We are looking forward to refactor it.
     """
 
+    config: Config
+    prompter: Prompter
+
     observer: Observer
     has_path: bool
     event_buffer: EventBuffer
-    verbose: bool
-    _callback: Callable[[FileSystemEvent], None]
+    _callback: Callable[[FileSystemEvent], bool]  # returns if the event was launched
 
-    def __init__(self):
+    def __init__(self, config, prompter: Prompter):
         FileSystemEventHandler.__init__(self)
         threading.Thread.__init__(self, daemon=True)
+
+        self.config = config
+        self.prompter = prompter
         self.observer = Observer()
         self.has_path = False
         self.event_buffer = EventBuffer()
-        self.verbose = False
         self._callback = None
 
     def add_path(self, path):
@@ -94,15 +100,23 @@ class Watcher(FileSystemEventHandler, threading.Thread):
             raise RuntimeError('Set callback before starting watcher')
 
         self.observer.start()
+        last = datetime.now().timestamp()
 
         while True:
             for event, timestamp in self.event_buffer.items():
                 elapsed = datetime.now().timestamp() - timestamp
-                if elapsed <= 0.01:
+                if elapsed <= self.config.event.rate_limit_duration:
+                    continue
+                elif self.config.event.ignore_events_while_run and timestamp < last:
+                    if self.config.log.ignored_events:  # TODO: change to ignored_events
+                        self.prompter.ignore("Watcher", "overlapped", event)
+                    self.event_buffer.pop(event)
                     continue
                 self.event_buffer.pop(event)
-                self._callback(event)
-            time.sleep(0.001)
+                launched = self._callback(event)
+                if launched:
+                    last = datetime.now().timestamp()
+            time.sleep(0.1)
 
     # -- Impl. of FileSystemEventHandler --
 
@@ -112,10 +126,10 @@ class Watcher(FileSystemEventHandler, threading.Thread):
         If there is an identical event in buffer, it's ignored.
         """
         if event in self.event_buffer.events():
-            if self.verbose:
-                print(f'Ign event: {event}')
+            if self.config.log.ignored_events:
+                self.prompter.ignore("Watcher", "ratelimit", event)
             return
-        if self.verbose:
-            print(f'Set event: {event}')
+        if self.config.log.accepted_events:
+            self.prompter.accept(event)
 
         self.event_buffer.push(event)

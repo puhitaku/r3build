@@ -1,19 +1,15 @@
-# Example: Linux kernel for NXP (formerly Freescale) i.MX28 SoCs w/ cross compile
-# Useful for hacking Linux kernel.
+# Example: Linux kernel for NXP i.MX28 SoCs w/ cross compile
 
-[[rule]]
-name = "Linux"
-processor = "make"  # make processor
-jobs = 8            # 8 jobs to run parallel
+[[job]]
+  name = "Linux"
+  type = "make"  # invokes make
+  jobs = 0       # auto-detect the N of job workers
+  when = "modified"  # triggers when something is modified
+  glob = [  # watch .c, .h, configs
+    '*.c',
+    '*.h',
+    '*config',
+  ]
 
-regex = '.*\.[ch]$' # watch .c and .h
-only = "modified"   # trigger only on modify
-
-environment.ARCH = "arm"
-environment.CROSS_COMPILE = "arm-linux-gnueabi-"
-
-# Alternative way:
-#
-# [rule.environment]
-# ARCH = "arm"
-# CROSS_COMPILE = "arm-linux-gnueabi-"
+  environment.ARCH = "arm"
+  environment.CROSS_COMPILE = "arm-linux-gnueabi-"

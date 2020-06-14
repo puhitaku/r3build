@@ -1,0 +1,179 @@
+# Model definition of r3build.toml.
+
+[log]
+description = """
+`log` section defines what r3build will output.
+"""
+
+all.type = "bool"
+all.default = false
+all.description = """
+Turn on all event logs.
+Notice: it overrides all other log flags.
+"""
+
+# TODO: quiet
+
+accepted_events.type = "bool"
+accepted_events.default = false
+accepted_events.description = "Show accepted incoming events by Watcher."
+
+ignored_events.type = "bool"
+ignored_events.default = false
+ignored_events.description = "Show rate-limited / filtered events."
+
+launched_events.type = "bool"
+launched_events.default = true
+launched_events.description = "Show launched jobs that got matching events."
+
+job_output.type = "bool"
+job_output.default = true
+job_output.description = "Show the output of the executed job."
+
+result.type = "bool"
+result.default = true
+result.description = "Show if the run was successful or not."
+
+time.type = "bool"
+time.default = true
+time.description = "Show job's execution time."
+
+
+[event]
+description = "`event` section defines how r3build handle events."
+
+rate_limit_duration.type = "float"
+rate_limit_duration.default = 0.01
+rate_limit_duration.description = """
+Duration for dropping (debouncing) events that occurred so closely (the unit is second).
+"""
+
+ignore_events_while_run.type = "bool"
+ignore_events_while_run.default = true
+ignore_events_while_run.description = """
+Ignore events occurred while a job is running.
+Disabling this flag may result in a never-ending execution loop. Disable with care.
+"""
+
+
+[job.common]
+description = """
+`job` array-of-tables that defines jobs.
+ - What to watch (match and exclude files with glob and regex)
+ - What to execute
+ - How to execute
+... and etc.
+"""
+
+type.required = true
+type.type = "str"
+type.default = ""
+type.description = """
+The type of the job.
+To see the full list of available types, run `r3build --list-types`.
+For type-specific configs, see the following sections.
+"""
+
+name.type = "str"
+name.default = "noname"
+name.description = "Human-readable name of the job."
+
+when.type = "Union[List[str], str]"
+when.default = ""
+when.description = """
+One or more types of events to trigger this job.
+The job will accept all types of events if it's ommitted.
+Available choices are "moved", "deleted", "created", "modified".
+"""
+
+path.type = "str"
+path.default = "."
+path.description = """
+The root directory to watch.
+Any file events (move, delete, create, modify) inside this directory will be reported to r3build recursively.
+"""
+
+glob.type = "Union[List[str], str]"
+glob.default = ""
+glob.description = """
+One or more glob patterns to match the file path.
+The job will be triggered if one or more patterns match to it.
+"""
+
+glob_exclude.type = "Union[List[str], str]"
+glob_exclude.default = ""
+glob_exclude.description = """
+One or more glob patterns to exclude. The effect is opposite to `glob`.
+The job won't be triggered if one or more patterns match to it.
+"""
+
+regex.type = "Union[List[str], str]"
+regex.default = ""
+regex.description = """
+One or more regular expression patterns to match the file path.
+The job will be triggered if one or more patterns match to it.
+"""
+
+regex_exclude.type = "Union[List[str], str]"
+regex_exclude.default = ""
+regex_exclude.description = """
+One or more regular expression patterns to exclude. The effect is opposite to `regex`.
+The job won't be triggered if one or more file patterns match to it.
+"""
+
+
+[job.make]
+description = "`make` type runs a target in a Makefile."
+
+target.type = "str"
+target.default = ""
+target.description = "The make target."
+
+environment.type = "Dict[str, str]"
+environment.default = ""
+environment.description = """
+Specify additional environment variables.
+By default, r3build inherits the parent's envs.
+"""
+
+jobs.type = "int"
+jobs.default = 0
+jobs.description = """
+Number of parallel jobs. Equivalent to `make -j` option.
+If it's zero, r3build will decide N of jobs with multiprocessing.cpu_count().
+"""
+
+directory.type = "str"
+directory.default = ""
+directory.description = "The directory to read Makefile in. Equivalent to `make -C` option."
+
+
+[job.command]
+description = "`command` type invokes a command."
+
+command.required = true
+command.type = "str"
+command.default = ""
+command.description = "The command to run. This command will be executed by `subprocess.run` with `shell=True`."
+
+environment.type = "Dict[str, str]"
+environment.default = ""
+environment.description = """
+Specify additional environment variables.
+By default, r3build inherits the parent's envs.
+"""
+
+[job.pytest]
+description = "`pytest` type runs pytest on a package (directory) or a module (file)."
+
+target.required = true
+target.type = "str"
+target.default = ""
+target.description = """
+File or directory to run tests.
+This string is passed to pytest.main() and also used for reloading Python modules to update test code.
+For an advanced use like passing arbitrary arguments to pytest, please use `command` type.
+"""
+
+[job.internaltest]
+description = "`_test` type for testing purpose."

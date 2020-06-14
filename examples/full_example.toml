@@ -1,0 +1,61 @@
+# Example: Almost all variation of possible configuration.
+#          Ask me if you want to see more advanced/detailed example.
+
+[log]
+  all = false
+  accepted_events = true
+  rate_limited_events = false
+  filtered_events = false
+  launched_events = false
+  job_output = true
+  result = true
+  time = true
+
+
+[event]
+  rate_limit_duration = 0.01
+  ignore_events_while_run = true
+
+
+[[job]]
+  type = "make"  # invoke make when changes are detected
+  name = "Make processor example"  # human-readable name
+  when = "modified"  # specify single event type by str
+  path = "."  # path to watch (recursively watched)
+  glob = "*.c"  # r3build will implicitly prepend `path` when matching globs; "*.c" will be treated as "./*.c" here
+  glob_exclude = ["tmp/*", "build/*"]  # specify multiple patterns with an array of str
+  # while it's not recommended, specifying both glob and regex is possible
+
+  # items specific to make type
+  target = "*.c"
+  environment = {"KEY" = "value"}  # we use inline dict for example; dotted style is also available
+  jobs = 0  # 0 for auto-detect, > 0 for manual
+  directory = "somedir"  # equivalent to `-C` option
+
+
+[[job]]
+  type = "command"
+  name = "Command runner example"
+  when = ["created", "modified"]  # specify multiple event type by an array of str
+  path = "./foo"
+  regex = [".+"]
+  regex_exclude = ["./foo/env/.*"]
+
+  # items specific to command type
+  command = """
+  echo Hi, I'm $USER!
+  echo Say $HELLO to the new comer $R3_FILENAME !
+  """  # R3_* envs are available as it will be interpreted by shell
+  environment.HELLO = "Hello"  # we write dotted dict for example; inline style is also available
+
+
+[[job]]
+  type = "pytest"
+  name = "PyTest example"
+  when = ["created", "modified"]  # specify multiple event type by an array of str
+  path = "./foo"
+  regex = [".+\\.py$", ".+setup.(py|cfg)$"]
+  regex_exclude = ["./foo/env/.*"]
+
+  # items specific to pytest type
+  target = "yourpackage"  # package / module name that you want to test

@@ -1,20 +1,13 @@
-# Example: U-Boot for NXP (formerly Freescale) i.MX28 SoCs w/ cross compile
-# Useful for hacking U-Boot.
+# Example: U-Boot for NXP i.MX28 SoCs w/ cross compile
 
-[[rule]]
-name = "U-Boot"
-processor = "make"    # make processor
-target = "u-boot.sb"  # make target
-jobs = 8              # 8 jobs to run parallel
+[[job]]
+  name = "U-Boot"
+  type = "make"  # invokes make
+  target = "u-boot.sb"  # make target
+  jobs = 0  # auto-detect the N of job workers
 
-regex = '.*\.[ch]$'   # watch .c and .h
-only = "modified"     # trigger only on modify
+  when = "modified"  # triggers when something is modified
+  regex = '.*\.([ch]|dts)$'  # watch .c, .h, and .dts
 
-environment.ARCH = "arm"
-environment.CROSS_COMPILE = "arm-linux-gnueabi-"
-
-# Alternative way:
-#
-# [rule.environment]
-# ARCH = "arm"
-# CROSS_COMPILE = "arm-linux-gnueabi-"
+  environment.ARCH = "arm"
+  environment.CROSS_COMPILE = "arm-linux-gnueabi-"

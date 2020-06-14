@@ -14,7 +14,10 @@ jobs:
           command: pip install -r requirements.txt -r requirements.dev.txt
       - run:
           name: Test
-          command: python -m pytest
+          command: python -m pytest --cov=r3build
+      - run:
+          name: Coveralls
+          command: python -m coveralls
 
 workflows:
   version: 2

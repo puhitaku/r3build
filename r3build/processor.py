@@ -1,153 +1,118 @@
+import importlib
 import os
-import re
 import subprocess
-from dataclasses import dataclass
-from fnmatch import fnmatchcase
-from functools import lru_cache
+import sys
 from multiprocessing import cpu_count
-from typing import Any, Dict, List, Set
+from typing import Set
+
+from watchdog.events import FileSystemEvent
+
+from r3build.prompter import Prompter
 
 
 class Processor:
-    tid: str
-    mendatory_keys: Set[str]
-    kv: Dict[str, Any]
-    verbose: bool
+    id: str
+    mendatory_keys: Set[str] = set()
+    optional_keys: Set[str] = set()
 
-    name: str
+    _prompter: Prompter
 
-    def __init__(self):
-        self.name = 'noname'
-        self.mendatory_keys = set()
-        self.kv = dict()
-        self.verbose = False
+    def __init__(self, root_config, prompter: Prompter):
+        self.root_config = root_config
+        self._prompter = prompter
 
-    def get(self, key, default=None):
-        return self.kv.get(key, default)
-
-    def set(self, key, value):
-        self.kv[key] = value
-
-    def dispatch(self, event):
-        for k, v in self.kv.items():
-            if k == 'glob' and not self._filter_glob(v, event):
-                return
-            elif k == 'glob_exclude' and self._filter_glob(v, event):
-                return
-            elif k == 'regex' and not self._filter_regex(v, event):
-                return
-            elif k == 'regex_exclude' and self._filter_regex(v, event):
-                return
-            elif k == 'only' and not self._filter_only(v, event):
-                return
-
-        if not self._is_sufficient():
-            lack = self.mendatory_keys - set(self.kv.keys())
-            lack = ', '.join(lack)
-            s = 's' if len(lack) > 1 else ''
-            raise RuntimeError(f'Processor {self.tid} lacks mendatory key{s}: {lack}')
-
-        if self.verbose:
-            print(
-                f'R3build: detected rule <{self.name}> path={event.src_path}, event={event.event_type}'
-            )
-        self.on_change(event)
-
-    def on_change(self, event):
+    def on_change(self, config, event):
         raise NotImplementedError
 
-    def _is_sufficient(self):
-        return self.mendatory_keys.issubset(set(self.kv.keys()))
-
-    def _filter_glob(self, pattern, event):
-        if isinstance(pattern, list):
-            return any(fnmatchcase(event.src_path, p) for p in pattern)
-        return fnmatchcase(event.src_path, pattern)
-
-    def _filter_regex(self, pattern, event):
-        match = self._re_match(pattern)
-        return match(event.src_path) is not None
-
-    def _filter_only(self, only, event):
-        if isinstance(only, list):
-            return any(o == event.event_type for o in only)
-        return only == event.event_type
+    def _helper_run(self, cmd, **kwargs):
+        if not self.root_config.log.job_output:
+            kwargs['stdout'] = subprocess.DEVNULL
+            kwargs['stderr'] = subprocess.DEVNULL
+        return subprocess.run(cmd, **kwargs)
 
     @staticmethod
-    @lru_cache(typed=True)
-    def _re_match(pattern):
-        return re.compile(pattern).search
+    def _helper_merge_env(config, event: FileSystemEvent):
+        env = os.environ
+        env.update(config.environment)
+        env.update({
+            'R3_EVENT': event.event_type,
+            'R3_FILENAME': event.src_path,
+            'R3_IS_DIRECTORY': '1' if event.is_directory else '0',
+        })
+        return env
 
 
 class MakeProcessor(Processor):
-    tid = 'make'
+    id = 'make'
+    optional_keys = {'target', 'environment', 'jobs'}
 
-    def on_change(self, event):
-        jobs = self.get('jobs', 'auto')
-        if jobs == 'auto':
+    def on_change(self, config, event):
+        jobs = config.jobs
+        if jobs == 0:
             jobs = str(cpu_count())
         else:
             jobs = str(jobs)
 
-        target = self.get('target', '')
-        cmd = f'make -j{jobs} {target}'.strip()
+        target = config.target
 
-        env = os.environ
-        env.update(self.get('environment', dict()))
+        directory = config.directory
+        if directory:
+            directory = f'-C {directory}'
 
-        subprocess.run(cmd, shell=True, env=env)
+        cmd = f'make -j{jobs} {directory} {target}'.strip()
+        env = self._helper_merge_env(config, event)
+        return self._helper_run(cmd, shell=True, env=env).returncode == 0
 
 
 class PytestProcessor(Processor):
-    # RECOMMEND: use `CommandProcessor` to run pytest.
-    # FIXME: this processor looks like working but it does not
-    #        affect the change of code that are being tested.
-    #        We have to find how to identify what's being tested in runtime and
-    #        its module name to commence re-import and remove side-effect.
-    #        This means it's totally unusable in the field that r3build
-    #        focuses into -- doing re-builds and re-tests.
-    #        We won't deprecate it for now, but it won't be enabled until this issue is solved.
-    tid = 'pytest'
+    id = 'pytest'
+    mendatory_keys = {'target'}
 
-    def on_change(self, event):
+    def on_change(self, config, event):
         import pytest
 
-        pytest.main()
+        pytest_target = config.target
+        modules = [v for k, v in sys.modules.items() if k.startswith(pytest_target)]
+        for m in modules:
+            importlib.reload(m)
+        exitcode = pytest.main([pytest_target])
+        return exitcode == 0
 
 
 class CommandProcessor(Processor):
-    tid = 'command'
+    id = 'command'
     mendatory_keys = {'command'}
+    optional_keys = {'environment'}
 
-    def on_change(self, event):
-        cmd = self.get('command')
-        env = os.environ
-        env.update(self.get('environment', dict()))
-        subprocess.run(cmd, shell=True, env=env)
+    def on_change(self, config, event):
+        cmd = config.command
+        env = self._helper_merge_env(config, event)
+        return self._helper_run(cmd, shell=True, env=env).returncode == 0
 
 
-class TestableProcessor(Processor):
-    tid = '_test'
-    mendatory_keys = set()
+class InternaltestProcessor(Processor):
+    id = 'internaltest'
     history = None
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, config, prompter):
+        super().__init__(config, prompter)
         self.history = []
 
     def clear_history(self):
         self.history = []
 
-    def on_change(self, event):
+    def on_change(self, config, event):
         self.history.append(event)
-        print(f'<{self.name}>  event: {event.event_type}, path: {event.src_path}')
+        name = config.name
+        print(f'<{name}>  event: {event.event_type}, path: {event.src_path}')
+        return True
 
 
 p = [
     MakeProcessor,
-    # PytestProcessor,
+    PytestProcessor,
     CommandProcessor,
-    TestableProcessor,
+    InternaltestProcessor,
 ]
 
-available_processors = {t.tid: t for t in p}
+available_processors = {t.id: t for t in p}
