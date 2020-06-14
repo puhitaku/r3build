@@ -31,11 +31,11 @@ filtered_events.description = "Show filtered events."
 
 dispatched_events.type = "bool"
 dispatched_events.default = false
-dispatched_events.description = "Show events dispatched to processors."
+dispatched_events.description = "Show events dispatched to jobs."
 
 job_output.type = "bool"
 job_output.default = true
-job_output.description = "Show the output of the executed processor."
+job_output.description = "Show the output of the executed job."
 
 result.type = "bool"
 result.default = true
@@ -58,17 +58,17 @@ Duration for dropping (debouncing) events that occurred so closely (the unit is 
 ignore_events_while_run.type = "bool"
 ignore_events_while_run.default = true
 ignore_events_while_run.description = """
-Ignore events occurred while a processor is running.
+Ignore events occurred while a job is running.
 Disabling this flag may result in a never-ending execution loop. Disable with care.
 """
 
 
 [job.common]
 description = """
-`job` array-of-tables defines jobs.
+`job` array-of-tables that defines jobs.
  - What to watch (match and exclude files with glob and regex)
- - What processor to execute
- - How the processor process things
+ - What to execute
+ - How to execute
 ... and etc.
 """
 
@@ -76,9 +76,9 @@ type.required = true
 type.type = "str"
 type.default = ""
 type.description = """
-The ID of the processor for the job.
-To see the full list of processors, run `r3build --list-types`.
-For processor-specific configs, see the following sections.
+The type of the job.
+To see the full list of available types, run `r3build --list-types`.
+For type-specific configs, see the following sections.
 """
 
 name.type = "str"
@@ -130,7 +130,7 @@ The job won't be triggered if one or more file patterns match to it.
 
 
 [job.make]
-description = "`make` processor runs a target in a Makefile."
+description = "`make` type runs a target in a Makefile."
 
 target.type = "str"
 target.default = ""
@@ -156,9 +156,8 @@ directory.description = "The directory to read Makefile in. Equivalent to `make 
 
 
 [job.command]
-description = "`command` processor invokes a command."
+description = "`command` type invokes a command."
 
-# TODO: support template to pass filename and more
 command.required = true
 command.type = "str"
 command.default = ""
@@ -172,7 +171,7 @@ By default, r3build inherits the parent's envs.
 """
 
 [job.pytest]
-description = "`pytest` processor runs pytest on a package (directory) or a module (file)."
+description = "`pytest` type runs pytest on a package (directory) or a module (file)."
 
 target.required = true
 target.type = "str"
@@ -180,8 +179,8 @@ target.default = ""
 target.description = """
 File or directory to run tests.
 This string is passed to pytest.main() and also used for reloading Python modules to update test code.
-For an advanced use like passing arbitrary arguments to pytest, please use `command` processor.
+For an advanced use like passing arbitrary arguments to pytest, please use `command` type.
 """
 
 [job.internaltest]
-description = "`_test` processor for testing purpose."
+description = "`_test` type for testing purpose."

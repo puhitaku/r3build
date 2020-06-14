@@ -41,7 +41,7 @@ glob_exclude = ["extra/*", "extra/**/*"]
 
 This means that "when .c or .h files are modified, run `make`, but ignore all files in `extra` directory."
 
-Here's a yet another general one for who is not using `make`.
+Another example:
 
 ```
 $ cat r3build.toml
@@ -53,9 +53,15 @@ when = ["modified"]
 glob = ["./foobar/*.py", "./foobar/**/*.py"]
 ```
 
-This means that "when Python code in `foobar` package is edited, run `__main__.py` in the package."
+This means that "when a Python code in `foobar` package is edited, run `__main__.py` in the package."
 
 2. Invoke r3build. This watches what you edit.
+
+```
+$ r3build
+```
+
+Alternatively:
 
 ```
 $ python -m r3build
@@ -121,7 +127,13 @@ glob_exclude = ["extra/*", "extra/**/*"]
 
 The `glob_exclude` configuration will ignore the changes occurred in `extra` directory.
 
-For more details, see [r3build.skeleton.toml](r3build.skeleton.toml) (and the code of course :wink:)
+
+Spec of r3build.toml
+-----------------
+
+See [r3build.skeleton.toml](r3build.skeleton.toml) for available configurations.
+
+The full example of r3build.toml is not yet described but simpler examples are in [examples](examples).
 
 
 Confirmed platforms

@@ -24,10 +24,10 @@
 #  - Show filtered events.
 #
 # dispatched_events (bool)
-#  - Show events dispatched to processors.
+#  - Show events dispatched to jobs.
 #
 # job_output (bool)
-#  - Show the output of the executed processor.
+#  - Show the output of the executed job.
 #
 # result (bool)
 #  - Show if the run was successful or not.
@@ -52,7 +52,7 @@ time = true
 #  - Duration for dropping (debouncing) events that occurred so closely (the unit is second).
 #
 # ignore_events_while_run (bool)
-#  - Ignore events occurred while a processor is running.
+#  - Ignore events occurred while a job is running.
 #  - Disabling this flag may result in a never-ending execution loop. Disable with care.
 
 rate_limit_duration = 0.01
@@ -60,16 +60,16 @@ ignore_events_while_run = true
 
 
 [[job]]
-# `job` array-of-tables defines jobs.
+# `job` array-of-tables that defines jobs.
 #  - What to watch (match and exclude files with glob and regex)
-#  - What processor to execute
-#  - How the processor process things
+#  - What to execute
+#  - How to execute
 # ... and etc.
 
 # type (str)  *REQUIRED*
-#  - The ID of the processor for the job.
-#  - To see the full list of processors, run `r3build --list-types`.
-#  - For processor-specific configs, see the following sections.
+#  - The type of the job.
+#  - To see the full list of available types, run `r3build --list-types`.
+#  - For type-specific configs, see the following sections.
 #
 # name (str)
 #  - Human-readable name of the job.
@@ -110,7 +110,7 @@ regex_exclude = ""
 
 
 [[job]]  # Properties specific to `make` processor
-# `make` processor runs a target in a Makefile.
+# `make` type runs a target in a Makefile.
 
 # target (str)
 #  - The make target.
@@ -133,7 +133,7 @@ directory = ""
 
 
 [[job]]  # Properties specific to `command` processor
-# `command` processor invokes a command.
+# `command` type invokes a command.
 
 # command (str)  *REQUIRED*
 #  - The command to run. This command will be executed by `subprocess.run` with `shell=True`.
@@ -147,11 +147,11 @@ environment = ""
 
 
 [[job]]  # Properties specific to `pytest` processor
-# `pytest` processor runs pytest on a package (directory) or a module (file).
+# `pytest` type runs pytest on a package (directory) or a module (file).
 
 # target (str)  *REQUIRED*
 #  - File or directory to run tests.
 #  - This string is passed to pytest.main() and also used for reloading Python modules to update test code.
-#  - For an advanced use like passing arbitrary arguments to pytest, please use `command` processor.
+#  - For an advanced use like passing arbitrary arguments to pytest, please use `command` type.
 
 target = ""
