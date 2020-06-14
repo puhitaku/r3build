@@ -2,6 +2,7 @@ import toml
 
 from r3build import watcher
 from r3build.config import Config
+from r3build.prompter import Prompter
 
 
 class R3build:
@@ -25,7 +26,7 @@ class R3build:
         # Load the config from toml
         if config_fn:
             with open(config_fn) as raw:
-                self.config = Config(toml.load(raw))
+                self.config = Config(toml.load(raw), p)
         # Or from prepared dict
         elif config_dict:
             self.config = Config(config_dict)
@@ -33,7 +34,7 @@ class R3build:
             raise RuntimeError('Specify config file or config dict')
 
         self.config.log.all |= verbose
-        self.watcher = watcher.Watcher(self.config)
+        self.watcher = watcher.Watcher(self.config, Prompter(self.config))
 
     def run(self):
         # Register paths to watch

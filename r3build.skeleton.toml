@@ -14,14 +14,10 @@
 #  - Notice: it overrides all other log flags.
 #
 # accepted_events (bool)
-#  - Show all incoming events except rate-limited ones.
+#  - Show accepted incoming events by Watcher.
 #
-# rate_limited_events (bool)
-#  - Show rate-limited events.
-#  - Hint: rate-limit duration is set by `event.rate_limit_duration`.
-#
-# filtered_events (bool)
-#  - Show filtered events.
+# ignored_events (bool)
+#  - Show rate-limited / filtered events.
 #
 # dispatched_events (bool)
 #  - Show events dispatched to jobs.
@@ -37,8 +33,7 @@
 
 all = false
 accepted_events = false
-rate_limited_events = false
-filtered_events = false
+ignored_events = false
 dispatched_events = false
 job_output = true
 result = true

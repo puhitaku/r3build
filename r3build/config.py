@@ -7,21 +7,25 @@ from functools import lru_cache
 from math import floor
 from typing import List
 
-from r3build.processor import available_processors
 from r3build.config_class import Log, Event, Processor, processors
 from r3build.config_validator import AccessValidator
+from r3build.processor import available_processors
+from r3build.prompter import Prompter
 
 
 class Job:
-    def __init__(self, root_config: Config, job_config: Processor):
+    prompter: Prompter
+
+    def __init__(self, root_config: Config, prompter: Prompter, job_config: Processor):
         pid = job_config.type
         p = available_processors.get(pid, None)
         if p is None:
             raise ValueError(f'Unknown processor: "{pid}"')
 
-        self._processor = p(root_config)
+        self._processor = p(root_config, prompter)
         self._root_config = root_config
         self._job_config = job_config
+        self.prompter = prompter
 
     """Common job properties"""
 
@@ -75,23 +79,23 @@ class Job:
 
     def dispatch(self, event):
         if self.glob and not self._filter_glob(self.glob, event):
-            self._log_filtered_event(event)
+            self._log_ignored_event(event)
             return False
         elif self.glob_exclude and self._filter_glob(self.glob_exclude, event):
-            self._log_filtered_event(event)
+            self._log_ignored_event(event)
             return False
         elif self.regex and not self._filter_regex(self.regex, event):
-            self._log_filtered_event(event)
+            self._log_ignored_event(event)
             return False
         elif self.regex_exclude and self._filter_regex(self.regex_exclude, event):
-            self._log_filtered_event(event)
+            self._log_ignored_event(event)
             return False
         elif self.when and not self._filter_when(self.when, event):
-            self._log_filtered_event(event)
+            self._log_ignored_event(event)
             return False
 
         if self._root_config.log.dispatched_events:
-            print(f'\n >> R3BUILD >> detected a change for job "{self.name}" >>\n')
+            self.prompter.dispat(self.name)
 
         start = datetime.now()
         result = self.processor.on_change(self._job_config, event)
@@ -101,7 +105,7 @@ class Job:
 
         if self._root_config.log.result:
             mes = 'SUCCEEDED' if result else 'FAILED'
-            info.append(f'has {mes}')
+            info.append(mes)
 
         if self._root_config.log.time:
             h = floor(diff / timedelta(hours=1))
@@ -114,7 +118,7 @@ class Job:
 
         if info:
             info = ', '.join(info)
-            print(f'\n >> R3BUILD >> job "{self.name}" {info} >>\n')
+            self.prompter.result(self.name, info, "green" if result else "red")
 
         return True
 
@@ -137,9 +141,9 @@ class Job:
             return any(o == event.event_type for o in when)
         return when == event.event_type
 
-    def _log_filtered_event(self, event):
-        if self._root_config.log.filtered_events:
-            print(f'Filtered event: {event}')
+    def _log_ignored_event(self, event):
+        if self._root_config.log.ignored_events:
+            self.prompter.ignore(self.name, "patterns don't match", event)
 
     @staticmethod
     @lru_cache(typed=True)
@@ -167,8 +171,7 @@ class Config(AccessValidator):
         self.log = Log('log', raw_dict.get('log', dict()))
         if self.log.all:
             self.log.accepted_events = True
-            self.log.rate_limited_events = True
-            self.log.filtered_events = True
+            self.log.ignored_events = True
             self.log.dispatched_events = True
 
         self.event = Event('event', raw_dict.get('event', dict()))
@@ -182,5 +185,5 @@ class Config(AccessValidator):
                 raise ValueError(f'Unknown processor: "{proc}"')
 
             procins = processors[proc](job_def.get('name', '(noname)'), job_def)
-            job = Job(self, procins)
+            job = Job(self, Prompter(self), procins)
             self.job.append(job)

@@ -16,18 +16,11 @@ Notice: it overrides all other log flags.
 
 accepted_events.type = "bool"
 accepted_events.default = false
-accepted_events.description = "Show all incoming events except rate-limited ones."
+accepted_events.description = "Show accepted incoming events by Watcher."
 
-rate_limited_events.type = "bool"
-rate_limited_events.default = false
-rate_limited_events.description = """
-Show rate-limited events.
-Hint: rate-limit duration is set by `event.rate_limit_duration`.
-"""
-
-filtered_events.type = "bool"
-filtered_events.default = false
-filtered_events.description = "Show filtered events."
+ignored_events.type = "bool"
+ignored_events.default = false
+ignored_events.description = "Show rate-limited / filtered events."
 
 dispatched_events.type = "bool"
 dispatched_events.default = false

@@ -7,22 +7,26 @@ from typing import Set
 
 from watchdog.events import FileSystemEvent
 
+from r3build.prompter import Prompter
+
 
 class Processor:
     id: str
     mendatory_keys: Set[str] = set()
     optional_keys: Set[str] = set()
 
-    def __init__(self, root_config):
+    _prompter: Prompter
+
+    def __init__(self, root_config, prompter: Prompter):
         self.root_config = root_config
+        self._prompter = prompter
 
     def on_change(self, config, event):
         raise NotImplementedError
 
     def _helper_run(self, cmd, **kwargs):
-        print(f'Running command: {cmd}')
         if self.root_config.log.job_output:
-            print('Command output:')
+            self._prompter.output()
         else:
             kwargs['stdout'] = subprocess.DEVNULL
             kwargs['stderr'] = subprocess.DEVNULL
@@ -92,8 +96,8 @@ class InternaltestProcessor(Processor):
     id = 'internaltest'
     history = None
 
-    def __init__(self, config):
-        super().__init__(config)
+    def __init__(self, config, prompter):
+        super().__init__(config, prompter)
         self.history = []
 
     def clear_history(self):

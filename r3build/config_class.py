@@ -9,17 +9,15 @@ class Log(AccessValidator):
         "accepted_events",
         "all",
         "dispatched_events",
-        "filtered_events",
+        "ignored_events",
         "job_output",
-        "rate_limited_events",
         "result",
         "time",
     }
     _required = set()
     all: bool = False
     accepted_events: bool = False
-    rate_limited_events: bool = False
-    filtered_events: bool = False
+    ignored_events: bool = False
     dispatched_events: bool = False
     job_output: bool = True
     result: bool = True

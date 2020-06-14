@@ -9,6 +9,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 
 from r3build.config import Config
+from r3build.prompter import Prompter
 
 
 class EventBuffer:
@@ -56,17 +57,19 @@ class Watcher(FileSystemEventHandler, threading.Thread):
     """
 
     config: Config
+    prompter: Prompter
 
     observer: Observer
     has_path: bool
     event_buffer: EventBuffer
     _callback: Callable[[FileSystemEvent], bool]  # returns if the event was dispatched
 
-    def __init__(self, config):
+    def __init__(self, config, prompter: Prompter):
         FileSystemEventHandler.__init__(self)
         threading.Thread.__init__(self, daemon=True)
 
         self.config = config
+        self.prompter = prompter
         self.observer = Observer()
         self.has_path = False
         self.event_buffer = EventBuffer()
@@ -105,14 +108,13 @@ class Watcher(FileSystemEventHandler, threading.Thread):
                 if elapsed <= self.config.event.rate_limit_duration:
                     continue
                 elif self.config.event.ignore_events_while_run and timestamp < last:
-                    if self.config.log.rate_limited_events:
-                        print(f'Ignored event while run: {event}, {timestamp} < {last}')
+                    if self.config.log.ignored_events:  # TODO: change to ignored_events
+                        self.prompter.ignore("Watcher", "overlapped", event)
                     self.event_buffer.pop(event)
                     continue
                 self.event_buffer.pop(event)
                 dispatched = self._callback(event)
                 if dispatched:
-                    print(f'Dispatched event: {event}, {timestamp} < {last}')
                     last = datetime.now().timestamp()
             time.sleep(0.1)
 
@@ -124,10 +126,10 @@ class Watcher(FileSystemEventHandler, threading.Thread):
         If there is an identical event in buffer, it's ignored.
         """
         if event in self.event_buffer.events():
-            if self.config.log.rate_limited_events:
-                print(f'Rate-limited event: {event}')
+            if self.config.log.ignored_events:
+                self.prompter.ignore("Watcher", "ratelimit", event)
             return
         if self.config.log.accepted_events:
-            print(f'Accepted event: {event}')
+            self.prompter.accept(event)
 
         self.event_buffer.push(event)
