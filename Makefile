@@ -6,7 +6,7 @@ clean:
 	@rm -r $$(find . | grep pyc)
 
 watch:
-	@python -m r3build
+	@r3build
 
 generate_skeleton:
 	@python -m r3build.internal.defconv skel ./r3build.def.toml | black -q - > ./r3build.skeleton.toml

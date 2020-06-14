@@ -68,7 +68,7 @@ ignore_events_while_run = true
 
 # type (str)  *REQUIRED*
 #  - The ID of the processor for the job.
-#  - To see the full list of processors, run `python -m r3build --processors`.
+#  - To see the full list of processors, run `r3build --list-types`.
 #  - For processor-specific configs, see the following sections.
 #
 # name (str)

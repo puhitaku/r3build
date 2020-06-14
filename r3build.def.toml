@@ -77,7 +77,7 @@ type.type = "str"
 type.default = ""
 type.description = """
 The ID of the processor for the job.
-To see the full list of processors, run `python -m r3build --processors`.
+To see the full list of processors, run `r3build --list-types`.
 For processor-specific configs, see the following sections.
 """
 
