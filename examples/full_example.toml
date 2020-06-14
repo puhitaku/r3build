@@ -18,19 +18,20 @@
 
 
 [[job]]
-  type = "make"  # invoke make when changes are detected
-  name = "Make processor example"  # human-readable name
-  when = "modified"  # specify single event type by str
-  path = "."  # path to watch (recursively watched)
-  glob = "*.c"  # r3build will implicitly prepend `path` when matching globs; "*.c" will be treated as "./*.c" here
+  type = "make"                        # invoke make when changes are detected
+  name = "Make processor example"      # human-readable name
+  when = "modified"                    # specify single event type by str
+  path = "."                           # path to watch (recursively watched)
+  glob = "*.c"                         # r3build will implicitly prepend `path` when matching globs; "*.c" will be treated as "./*.c" here
   glob_exclude = ["tmp/*", "build/*"]  # specify multiple patterns with an array of str
+
   # while it's not recommended, specifying both glob and regex is possible
 
   # items specific to make type
-  target = "*.c"
-  environment = {"KEY" = "value"}  # we use inline dict for example; dotted style is also available
-  jobs = 0  # 0 for auto-detect, > 0 for manual
-  directory = "somedir"  # equivalent to `-C` option
+  target = "build"                  # make target
+  environment = {"KEY" = "value"}   # we use inline dict for example; dotted style is also available
+  jobs = 0                          # 0 for auto-detect, > 0 for manual
+  directory = "somedir"             # equivalent to `-C` option
 
 
 [[job]]
@@ -45,7 +46,8 @@
   command = """
   echo Hi, I'm $USER!
   echo Say $HELLO to the new comer $R3_FILENAME !
-  """  # R3_* envs are available as it will be interpreted by shell
+  """
+  # R3_* envs are available as it will be interpreted by shell
   environment.HELLO = "Hello"  # we write dotted dict for example; inline style is also available
 
 

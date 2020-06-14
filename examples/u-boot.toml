@@ -2,11 +2,11 @@
 
 [[job]]
   name = "U-Boot"
-  type = "make"  # invokes make
+  type = "make"         # invokes make
   target = "u-boot.sb"  # make target
-  jobs = 0  # auto-detect the N of job workers
+  jobs = 0              # auto-detect the N of job workers
 
-  when = "modified"  # triggers when something is modified
+  when = "modified"          # triggers when something is modified
   regex = '.*\.([ch]|dts)$'  # watch .c, .h, and .dts
 
   environment.ARCH = "arm"
