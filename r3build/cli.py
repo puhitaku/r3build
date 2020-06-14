@@ -26,7 +26,7 @@ class R3build:
         # Load the config from toml
         if config_fn:
             with open(config_fn) as raw:
-                self.config = Config(toml.load(raw), p)
+                self.config = Config(toml.load(raw))
         # Or from prepared dict
         elif config_dict:
             self.config = Config(config_dict)
