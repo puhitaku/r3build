@@ -176,6 +176,10 @@ class Config(AccessValidator):
 
         self.event = Event('event', raw_dict.get('event', dict()))
 
+        rawjobs = raw_dict.get('job', [])
+        if not rawjobs:
+            raise ValueError("The config has no job definition")
+
         self.job = []
         for job_def in raw_dict.get('job', []):
             proc = job_def.get('type', None)
