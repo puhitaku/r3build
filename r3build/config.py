@@ -75,9 +75,7 @@ class Job:
     def regex_exclude(self):
         return self._job_config.regex_exclude
 
-    """Event dispatch function called from main loop"""
-
-    def dispatch(self, event):
+    def launch(self, event):
         if self.glob and not self._filter_glob(self.glob, event):
             self._log_ignored_event(event)
             return False
@@ -94,8 +92,8 @@ class Job:
             self._log_ignored_event(event)
             return False
 
-        if self._root_config.log.dispatched_events:
-            self.prompter.dispat(self.name)
+        if self._root_config.log.launched_events:
+            self.prompter.launch(self.name, event)
 
         start = datetime.now()
         result = self.processor.on_change(self._job_config, event)
@@ -172,7 +170,7 @@ class Config(AccessValidator):
         if self.log.all:
             self.log.accepted_events = True
             self.log.ignored_events = True
-            self.log.dispatched_events = True
+            self.log.launched_events = True
 
         self.event = Event('event', raw_dict.get('event', dict()))
 

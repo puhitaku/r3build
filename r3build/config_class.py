@@ -8,9 +8,9 @@ class Log(AccessValidator):
     _slots = {
         "accepted_events",
         "all",
-        "dispatched_events",
         "ignored_events",
         "job_output",
+        "launched_events",
         "result",
         "time",
     }
@@ -18,7 +18,7 @@ class Log(AccessValidator):
     all: bool = False
     accepted_events: bool = False
     ignored_events: bool = False
-    dispatched_events: bool = False
+    launched_events: bool = True
     job_output: bool = True
     result: bool = True
     time: bool = True

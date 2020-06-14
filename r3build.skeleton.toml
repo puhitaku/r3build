@@ -19,8 +19,8 @@
 # ignored_events (bool)
 #  - Show rate-limited / filtered events.
 #
-# dispatched_events (bool)
-#  - Show events dispatched to jobs.
+# launched_events (bool)
+#  - Show launched jobs that got matching events.
 #
 # job_output (bool)
 #  - Show the output of the executed job.
@@ -34,7 +34,7 @@
 all = false
 accepted_events = false
 ignored_events = false
-dispatched_events = false
+launched_events = true
 job_output = true
 result = true
 time = true

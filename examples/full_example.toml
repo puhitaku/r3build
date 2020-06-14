@@ -6,7 +6,7 @@
   accepted_events = true
   rate_limited_events = false
   filtered_events = false
-  dispatched_events = false
+  launched_events = false
   job_output = true
   result = true
   time = true

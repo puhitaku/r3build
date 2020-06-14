@@ -22,9 +22,9 @@ ignored_events.type = "bool"
 ignored_events.default = false
 ignored_events.description = "Show rate-limited / filtered events."
 
-dispatched_events.type = "bool"
-dispatched_events.default = false
-dispatched_events.description = "Show events dispatched to jobs."
+launched_events.type = "bool"
+launched_events.default = true
+launched_events.description = "Show launched jobs that got matching events."
 
 job_output.type = "bool"
 job_output.default = true

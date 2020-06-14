@@ -62,7 +62,7 @@ class Watcher(FileSystemEventHandler, threading.Thread):
     observer: Observer
     has_path: bool
     event_buffer: EventBuffer
-    _callback: Callable[[FileSystemEvent], bool]  # returns if the event was dispatched
+    _callback: Callable[[FileSystemEvent], bool]  # returns if the event was launched
 
     def __init__(self, config, prompter: Prompter):
         FileSystemEventHandler.__init__(self)
@@ -113,8 +113,8 @@ class Watcher(FileSystemEventHandler, threading.Thread):
                     self.event_buffer.pop(event)
                     continue
                 self.event_buffer.pop(event)
-                dispatched = self._callback(event)
-                if dispatched:
+                launched = self._callback(event)
+                if launched:
                     last = datetime.now().timestamp()
             time.sleep(0.1)
 
