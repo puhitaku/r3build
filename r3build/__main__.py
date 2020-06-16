@@ -31,7 +31,7 @@ def main(config, verbose, list_types):
     try:
         while True:
             time.sleep(999999)
-    except KeyboardInterrupt:
+    finally:
         r3.close()
 
 
