@@ -158,8 +158,11 @@ environment = ""
 #  - Timeout to stop the process.
 #  - R3build try to kill it by SIGKILL after it exceeds the timeout.
 #
-# quiet (bool)
-#  - If it's set true, output of the process won't be printed.
+# stdout (bool)
+#  - If it's set false, stdout of the process won't be printed.
+#
+# stderr (bool)
+#  - If it's set false, stderr of the process won't be printed.
 #
 # environment (Dict[str, str])
 #  - Specify additional environment variables.
@@ -168,7 +171,8 @@ environment = ""
 command = ""
 signal = "SIGINT"
 timeout = 10
-quiet = false
+stdout = true
+stderr = true
 environment = ""
 
 

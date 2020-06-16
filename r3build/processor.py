@@ -142,14 +142,22 @@ class DaemonProcessor(Processor):
     def on_change(self, event: FileSystemEvent):
         self._stop()
         self._start()
+        return True
 
     def close(self):
         self._stop()
 
     def _start(self):
-        out = subprocess.DEVNULL if self._config.quiet else None
+        stdout = None if self._config.stdout else subprocess.DEVNULL
+        stderr = None if self._config.stderr else subprocess.DEVNULL
         # Thanks to: https://stackoverflow.com/a/22582602/2735798
-        self._child_process = Popen(self._config.command, shell=True, stdout=out, stderr=out, preexec_fn=os.setsid)
+        self._child_process = Popen(
+            self._config.command,
+            shell=True,
+            stdout=stdout,
+            stderr=stderr,
+            preexec_fn=os.setsid,
+        )
 
     def _stop(self):
         if self._child_process is None:

@@ -71,13 +71,14 @@ class CommandProcessorConfig(Processor):
 
 class DaemonProcessorConfig(Processor):
     _slots = Processor._slots.union(
-        {"command", "environment", "quiet", "signal", "timeout"}
+        {"command", "environment", "signal", "stderr", "stdout", "timeout"}
     )
     _required = Processor._required.union({"command"})
     command: str = ""
     signal: Union[int, str] = "SIGINT"
     timeout: int = 10
-    quiet: bool = False
+    stdout: bool = True
+    stderr: bool = True
     environment: Dict[str, str] = ""
 
 
