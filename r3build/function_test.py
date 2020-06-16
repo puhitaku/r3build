@@ -95,7 +95,7 @@ def gen_daemon(path):
 
 
 def test_config():
-    with pytest.raises(ValueError):  # no config
+    with pytest.raises(RuntimeError):  # no config
         R3build()
 
     with pytest.raises(ValueError):  # no job
