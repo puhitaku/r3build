@@ -69,6 +69,18 @@ class CommandProcessorConfig(Processor):
     environment: Dict[str, str] = ""
 
 
+class DaemonProcessorConfig(Processor):
+    _slots = Processor._slots.union(
+        {"command", "environment", "quiet", "signal", "timeout"}
+    )
+    _required = Processor._required.union({"command"})
+    command: str = ""
+    signal: Union[int, str] = "SIGINT"
+    timeout: int = 10
+    quiet: bool = False
+    environment: Dict[str, str] = ""
+
+
 class PytestProcessorConfig(Processor):
     _slots = Processor._slots.union({"target"})
     _required = Processor._required.union({"target"})
@@ -83,6 +95,7 @@ class InternaltestProcessorConfig(Processor):
 processors = {
     "make": MakeProcessorConfig,
     "command": CommandProcessorConfig,
+    "daemon": DaemonProcessorConfig,
     "pytest": PytestProcessorConfig,
     "internaltest": InternaltestProcessorConfig,
 }

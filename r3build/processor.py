@@ -1,9 +1,13 @@
 import importlib
 import os
+import signal
 import subprocess
 import sys
+import time
+from enum import IntEnum
 from multiprocessing import cpu_count
-from typing import Set
+from subprocess import Popen
+from typing import Optional, Set
 
 from watchdog.events import FileSystemEvent
 
@@ -105,6 +109,95 @@ class CommandProcessor(Processor):
         cmd = self._config.command
         env = self._helper_merge_env(self._config, event)
         return self._helper_run(cmd, shell=True, env=env).returncode == 0
+
+
+class DaemonProcessor(Processor):
+    id = 'daemon'
+    mendatory_keys = {'command'}
+    optional_keys = {'signal', 'environment'}
+
+    _config: DaemonProcessorConfig
+
+    _signal: int = None
+    _child_process: Optional[Popen] = None
+
+    def __init__(self, root_config, job_config: DaemonProcessorConfig, prompter):
+        super().__init__(root_config, job_config, prompter)
+
+        signals_str = {s.name: s for s in signal.valid_signals() if isinstance(s, IntEnum)}
+        signals_int = [s for s in signal.valid_signals()]
+
+        if isinstance(job_config.signal, int):
+            if job_config.signal not in signals_int:
+                raise ValueError(f'Signal {job_config.signal} is not available.')
+            self._signal = job_config.signal
+        else:
+            if job_config.signal not in signals_str:
+                raise ValueError(f'Signal {job_config.signal} is not available.')
+            self._signal = signals_str[job_config.signal]
+
+    def open(self):
+        self._start()
+
+    def on_change(self, event: FileSystemEvent):
+        self._stop()
+        self._start()
+
+    def close(self):
+        self._stop()
+
+    def _start(self):
+        out = subprocess.DEVNULL if self._config.quiet else None
+        # Thanks to: https://stackoverflow.com/a/22582602/2735798
+        self._child_process = Popen(self._config.command, shell=True, stdout=out, stderr=out, preexec_fn=os.setsid)
+
+    def _stop(self):
+        if self._child_process is None:
+            return
+
+        for duration in self._backoff(self._config.timeout):
+            # Graceful
+            os.killpg(os.getpgid(self._child_process.pid), self._signal)
+            self._fire_and_forget()
+            if self._child_process.poll() is not None:
+                break
+            time.sleep(duration)
+        else:
+            # You have been terminated
+            self._fire_and_forget(sig=signal.SIGKILL)
+        self._child_process = None
+
+    def _fire_and_forget(self, sig=None):
+        if sig is None:
+            sig = self._signal
+        try:
+            os.killpg(os.getpgid(self._child_process.pid), sig)
+        except Exception:
+            pass
+
+    @staticmethod
+    def _backoff(timeout):
+        class Backoff:
+            def __init__(self, d, timeout):
+                self.d, self.timeout = d, timeout
+                self.acc, self.stop = 0, False
+
+            def __iter__(self):
+                return self
+
+            def __next__(self):
+                if self.stop:
+                    raise StopIteration
+
+                if self.acc + self.d > self.timeout:
+                    self.stop = True
+                    return self.timeout - self.acc
+
+                ret = self.d
+                self.acc += self.d
+                self.d *= 2
+                return ret
+        return Backoff(0.1, timeout)
 
 
 class InternaltestProcessor(Processor):
