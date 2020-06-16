@@ -29,7 +29,8 @@ def main(config, verbose, list_types):
     r3.run()
 
     try:
-        time.sleep(999999)
+        while True:
+            time.sleep(999999)
     except KeyboardInterrupt:
         return
 
