@@ -1,0 +1,8 @@
+# Example: auto-reload daemon.py. Restarts it when you modify daemon.py
+
+[[job]]
+  name = "counter"
+  type = "daemon"
+  command = "python3 -m daemon.py"
+  glob = "daemon.py"
+  stderr = false
