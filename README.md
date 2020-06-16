@@ -22,8 +22,11 @@ $ pip install r3build
 ```
 
 
-How to use (TL;DR)
-------------------
+How to use (Case 1: one-shot build)
+-----------------------------------
+
+The first one introduces a combination of simple event detection and a "one-shot" task.
+When you edit your code and save it, r3build invokes a make target detecting that file event.
 
 1. Write `r3build.toml` in your project directory.
 
@@ -66,6 +69,41 @@ $ python -m r3build
 ```
 
 3. Edit your code as you want, and enjoy them being built / run automatically.
+
+
+How to use (Case 2: auto-reloading)
+-----------------------------------
+
+Let me introduce "auto-reloading" use-case for the second one.
+
+Say you're building a great asynchronous system with [Celery](https://github.com/celery/celery/).
+While the most popular way to reload Celery is to use [watchdog](https://github.com/gorakhargosh/watchdog),
+r3build has advantages to it; you no longer have to write complicated one-liners and you can manage all auto-reload
+tasks in one place.
+
+1. Write `r3build.toml` in your project directory.
+
+```
+$ cat r3build.toml
+[[job]]
+name = "Run celery"
+type = "daemon"
+command = "celery worker --app=app.entrypoint"
+when = ["created", "modified"]
+regex = ".+\.py$"
+```
+
+This means that:
+ - r3build launches Celery as a child process
+ - When .py files are created or modified, restart already running Celery
+
+2. Invoke r3build.
+
+```
+$ r3build
+```
+
+3. Write your code. Watch it restart. Voila!
 
 
 How to use (verbose)
