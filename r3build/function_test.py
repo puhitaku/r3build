@@ -94,6 +94,28 @@ def gen_daemon(path):
         """))
 
 
+def test_config():
+    with pytest.raises(ValueError):  # no config
+        R3build()
+
+    with pytest.raises(ValueError):  # no job
+        R3build(config_dict={'log': {}})
+
+    with pytest.raises(ValueError):  # lack processor
+        R3build(config_dict={
+            'job': [
+                {}
+            ]
+        })
+
+    with pytest.raises(ValueError):  # unknown processor
+        R3build(config_dict={
+            'job': [
+                {'type': 'sugoiprocessor'}
+            ]
+        })
+
+
 def test_glob1(instance, tmp):
     job = instance.get_job('glob1')
     job.processor.clear_history()
