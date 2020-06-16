@@ -131,13 +131,44 @@ directory = ""
 # `command` type invokes a command.
 
 # command (str)  *REQUIRED*
-#  - The command to run. This command will be executed by `subprocess.run` with `shell=True`.
+#  - The command to run. It will be interpreted by a shell.
 #
 # environment (Dict[str, str])
 #  - Specify additional environment variables.
 #  - By default, r3build inherits the parent's envs.
 
 command = ""
+environment = ""
+
+
+[[job]]  # Properties specific to `daemon` processor
+# `daemon` type invokes a command as a child daemon. It restarts the process when it got an event.
+# It will try to stop the process gracefully (defualt = SIGINT).
+# If it doesn't respond for a while (default timeout = 10sec), it will try to kill it by SIGKILL.
+
+# command (str)  *REQUIRED*
+#  - The command to run. It will be interpreted by a shell.
+#
+# signal (Union[int, str])
+#  - The signal to stop the process. By default, it's graceful SIGINT.
+#  - Specify a signal number in int or a signal name in str.
+#  - See https://docs.python.org/3/library/signal.html for available signal numbers and names.
+#
+# timeout (int)
+#  - Timeout to stop the process.
+#  - The processor try to kill it by SIGKILL after it exceeds the timeout.
+#
+# quiet (bool)
+#  - If it's set true, output of the process won't be printed.
+#
+# environment (Dict[str, str])
+#  - Specify additional environment variables.
+#  - By default, r3build inherits the parent's envs.
+
+command = ""
+signal = "SIGINT"
+timeout = 10
+quiet = false
 environment = ""
 
 
