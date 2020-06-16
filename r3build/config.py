@@ -9,12 +9,15 @@ from typing import List
 
 from r3build.config_class import Log, Event, Processor, processors
 from r3build.config_validator import AccessValidator
-from r3build.processor import available_processors
+from r3build.processor import Processor as ProcessorParent, available_processors
 from r3build.prompter import Prompter
 
 
 class Job:
-    prompter: Prompter
+    _processor: ProcessorParent
+    _root_config: Config
+    _job_config: Processor
+    _prompter: Prompter
 
     def __init__(self, root_config: Config, prompter: Prompter, job_config: Processor):
         pid = job_config.type
@@ -25,7 +28,7 @@ class Job:
         self._processor = p(root_config, job_config, prompter)
         self._root_config = root_config
         self._job_config = job_config
-        self.prompter = prompter
+        self._prompter = prompter
 
     """Common job properties"""
 
@@ -34,7 +37,7 @@ class Job:
         return self._job_config.name
 
     @property
-    def processor(self):
+    def processor(self) -> ProcessorParent:
         return self._processor
 
     @property
@@ -97,7 +100,7 @@ class Job:
             return False
 
         if self._root_config.log.launched_events:
-            self.prompter.launch(self.name, event)
+            self._prompter.launch(self.name, event)
 
         start = datetime.now()
         result = self.processor.on_change(event)
@@ -120,7 +123,7 @@ class Job:
 
         if info:
             info = ', '.join(info)
-            self.prompter.result(self.name, info, "green" if result else "red")
+            self._prompter.result(self.name, info, "green" if result else "red")
 
         return True
 
@@ -145,7 +148,7 @@ class Job:
 
     def _log_ignored_event(self, event):
         if self._root_config.log.ignored_events:
-            self.prompter.ignore(self.name, "patterns don't match", event)
+            self._prompter.ignore(self.name, "patterns don't match", event)
 
     @staticmethod
     @lru_cache(typed=True)
