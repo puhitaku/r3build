@@ -1,6 +1,6 @@
 import pytest
 
-from r3build.config_class import Processor, ProcMake
+from r3build.config_class import Processor, MakeProcessorConfig
 
 
 def test_simple_validation():
@@ -29,7 +29,7 @@ def test_recursive_validation():
     with pytest.raises(TypeError):
         p.when = 1
 
-    m = ProcMake('make', {'type': 'make'})
+    m = MakeProcessorConfig('make', {'type': 'make'})
 
     # Dict[str, str]
     m.environment = {'foo': '1'}

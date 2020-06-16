@@ -240,7 +240,7 @@ def def2class(de):
     proc_common = de['job']['common']
     del de['job']['common']
     procs = {'Processor': parse_section(proc_common)}
-    procs.update({f'Proc{name.title()}': parse_section(processor) for name, processor in de['job'].items()})
+    procs.update({f'{name.title()}ProcessorConfig': parse_section(processor) for name, processor in de['job'].items()})
 
     for name, processor in procs.items():
         if name == 'Processor':
@@ -260,7 +260,7 @@ def def2class(de):
 
         class_defs.append(f'{sig}\n    {sl_text}\n    {rq_text}\n{indent(lf.join(at), "    ")}')
 
-    procsl = [f"'{name}': Proc{name.title()}" for name in de['job'].keys()]
+    procsl = [f"'{name}': {name.title()}ProcessorConfig" for name in de['job'].keys()]
     class_defs.append(f'processors = {{{", ".join(procsl)}}}')
 
     joined = def2class_template.format(body='\n\n\n'.join(class_defs))
