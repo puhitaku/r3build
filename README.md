@@ -78,8 +78,10 @@ Let me introduce "auto-reloading" use-case for the second one.
 
 Say you're building a great asynchronous system with [Celery](https://github.com/celery/celery/).
 While the most popular way to reload Celery is to use [watchdog](https://github.com/gorakhargosh/watchdog),
-r3build has advantages to it; you no longer have to write complicated one-liners and you can manage all auto-reload
-tasks in one place.
+r3build has advantages to it;
+
+ - No longer have to write one-liners and double-hyphens
+ - Manage all auto-reload tasks in one place
 
 1. Write `r3build.toml` in your project directory.
 
@@ -97,13 +99,27 @@ This means that:
  - r3build launches Celery as a child process
  - When .py files are created or modified, restart already running Celery
 
+Suppressing stdout and/or stderr is also available.
+
+```
+$ cat r3build.toml
+[[job]]
+name = "Run celery"
+type = "daemon"
+command = "celery worker --app=app.entrypoint"
+when = ["created", "modified"]
+regex = ".+\.py$"
+stdout = false
+stderr = true
+```
+
 2. Invoke r3build.
 
 ```
 $ r3build
 ```
 
-3. Write your code. Watch it restart. Voila!
+3. Watch it restart as you write code. Voila!
 
 
 How to use (verbose)
