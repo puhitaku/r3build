@@ -232,6 +232,7 @@ p = [
     MakeProcessor,
     PytestProcessor,
     CommandProcessor,
+    DaemonProcessor,
     InternaltestProcessor,
 ]
 
