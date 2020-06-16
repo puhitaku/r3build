@@ -138,14 +138,18 @@ class DaemonProcessor(Processor):
 
     def open(self):
         self._start()
+        self._prompter.procsay(self._config.name, f'Started: `{self._config.command}`')
 
     def on_change(self, event: FileSystemEvent):
+        self._prompter.procsay(self._config.name, f'Restarting...')
         self._stop()
         self._start()
+        self._prompter.procsay(self._config.name, f'Restarted!')
         return True
 
     def close(self):
         self._stop()
+        self._prompter.procsay(self._config.name, f'Stopped!')
 
     def _start(self):
         stdout = None if self._config.stdout else subprocess.DEVNULL

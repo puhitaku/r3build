@@ -25,3 +25,11 @@ class Prompter:
     def result(self, name, info, color):
         name = self.ellipsify(name)
         cprint(f"R3BUILD {name} >> {info}", color)
+
+    def procsay(self, name, mes):
+        name = self.ellipsify(name)
+        cprint(f"R3BUILD {name} >> {mes}", "green")
+
+    def procerr(self, name, mes):
+        name = self.ellipsify(name)
+        cprint(f"R3BUILD {name} >> {mes}", "red")
