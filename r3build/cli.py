@@ -58,7 +58,7 @@ class R3build:
         def _invoke(event):
             accepted = False
             for job in self.config.job:
-                accepted |= job.launch(event)
+                accepted |= job.trigger(event)
             return accepted
 
         # Register callback and start asynchronous watcher

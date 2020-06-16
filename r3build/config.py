@@ -82,7 +82,7 @@ class Job:
     def regex_exclude(self):
         return self._job_config.regex_exclude
 
-    def launch(self, event):
+    def trigger(self, event):
         if self.glob and not self._filter_glob(self.glob, event):
             self._log_ignored_event(event)
             return False
@@ -100,7 +100,7 @@ class Job:
             return False
 
         if self._root_config.log.launched_events:
-            self._prompter.launch(self.name, event)
+            self._prompter.trigger(self.name, event)
 
         start = datetime.now()
         result = self.processor.on_change(event)
