@@ -22,7 +22,7 @@ class Job:
         if p is None:
             raise ValueError(f'Unknown processor: "{pid}"')
 
-        self._processor = p(root_config, prompter)
+        self._processor = p(root_config, job_config, prompter)
         self._root_config = root_config
         self._job_config = job_config
         self.prompter = prompter
@@ -100,7 +100,7 @@ class Job:
             self.prompter.launch(self.name, event)
 
         start = datetime.now()
-        result = self.processor.on_change(self._job_config, event)
+        result = self.processor.on_change(event)
         diff = datetime.now() - start
 
         info = []
