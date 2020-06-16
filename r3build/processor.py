@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 import importlib
 import os
 import signal
 import subprocess
 import sys
 import time
+from dataclasses import dataclass
 from enum import IntEnum
 from multiprocessing import cpu_count
 from subprocess import Popen
@@ -31,7 +34,7 @@ class Processor:
         """close is the start-up function that runs in the beginning of operation. Implementation is optional."""
         pass
 
-    def on_change(self, event: FileSystemEvent):
+    def on_change(self, event: FileSystemEvent) -> ProcessorResult:
         """on_change is the entrypoint for an incoming event. Derived classes must impelemnt it."""
         raise NotImplementedError
 
@@ -57,6 +60,16 @@ class Processor:
         return env
 
 
+@dataclass
+class ProcessorResult:
+    success: bool
+    message: str
+    color: str
+
+    def __init__(self, success, message="", color=""):
+        self.success, self.message, self.color = success, message, color
+
+
 class MakeProcessor(Processor):
     id = 'make'
     optional_keys = {'target', 'environment', 'jobs'}
@@ -78,7 +91,7 @@ class MakeProcessor(Processor):
 
         cmd = f'make -j{jobs} {directory} {target}'.strip()
         env = self._helper_merge_env(self._config, event)
-        return self._helper_run(cmd, shell=True, env=env).returncode == 0
+        return ProcessorResult(success=self._helper_run(cmd, shell=True, env=env).returncode == 0)
 
 
 class PytestProcessor(Processor):
@@ -95,7 +108,7 @@ class PytestProcessor(Processor):
         for m in modules:
             importlib.reload(m)
         exitcode = pytest.main([pytest_target])
-        return exitcode == 0
+        return ProcessorResult(success=exitcode == 0)
 
 
 class CommandProcessor(Processor):
@@ -108,7 +121,7 @@ class CommandProcessor(Processor):
     def on_change(self, event: FileSystemEvent):
         cmd = self._config.command
         env = self._helper_merge_env(self._config, event)
-        return self._helper_run(cmd, shell=True, env=env).returncode == 0
+        return ProcessorResult(success=self._helper_run(cmd, shell=True, env=env).returncode == 0)
 
 
 class DaemonProcessor(Processor):
@@ -144,8 +157,7 @@ class DaemonProcessor(Processor):
         self._prompter.procsay(self._config.name, f'Restarting...')
         self._stop()
         self._start()
-        self._prompter.procsay(self._config.name, f'Restarted!')
-        return True
+        return ProcessorResult(success=True, message="Restarted!")
 
     def close(self):
         self._stop()
@@ -229,7 +241,7 @@ class InternaltestProcessor(Processor):
         self.history.append(event)
         name = self._config.name
         print(f'<{name}>  event: {event.event_type}, path: {event.src_path}')
-        return True
+        return ProcessorResult(success=True)
 
 
 p = [

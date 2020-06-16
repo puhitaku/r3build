@@ -108,22 +108,29 @@ class Job:
 
         info = []
 
-        if self._root_config.log.result:
-            mes = 'SUCCEEDED' if result else 'FAILED'
-            info.append(mes)
+        if result.message:
+            info.append(result.message)
+        else:
+            if self._root_config.log.result:
+                mes = 'SUCCEEDED' if result.success else 'FAILED'
+                info.append(mes)
 
-        if self._root_config.log.time:
-            h = floor(diff / timedelta(hours=1))
-            m = floor(diff / timedelta(minutes=1)) % 60
-            s = floor(diff / timedelta(seconds=1)) % 60
-            h = f'{h:02d}h' if h > 0 else ''
-            m = f'{m:02d}m' if m > 0 else ''
-            s = f'{s:02d}s'
-            info.append(f'took {h}{m}{s}')
+            if self._root_config.log.time:
+                h = floor(diff / timedelta(hours=1))
+                m = floor(diff / timedelta(minutes=1)) % 60
+                s = floor(diff / timedelta(seconds=1)) % 60
+                h = f'{h:02d}h' if h > 0 else ''
+                m = f'{m:02d}m' if m > 0 else ''
+                s = f'{s:02d}s'
+                info.append(f'took {h}{m}{s}')
 
         if info:
             info = ', '.join(info)
-            self._prompter.result(self.name, info, "green" if result else "red")
+            if result.color:
+                color = result.color
+            else:
+                color = "green" if result.success else "red"
+            self._prompter.result(self.name, info, color)
 
         return True
 
