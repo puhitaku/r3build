@@ -8,6 +8,7 @@ from typing import Set
 from watchdog.events import FileSystemEvent
 
 from r3build.prompter import Prompter
+from r3build.config_class import *
 
 
 class Processor:
@@ -46,7 +47,7 @@ class MakeProcessor(Processor):
     id = 'make'
     optional_keys = {'target', 'environment', 'jobs'}
 
-    def on_change(self, config, event):
+    def on_change(self, config: MakeProcessorConfig, event: FileSystemEvent):
         jobs = config.jobs
         if jobs == 0:
             jobs = str(cpu_count())
@@ -68,7 +69,7 @@ class PytestProcessor(Processor):
     id = 'pytest'
     mendatory_keys = {'target'}
 
-    def on_change(self, config, event):
+    def on_change(self, config: PytestProcessorConfig, event: FileSystemEvent):
         import pytest
 
         pytest_target = config.target
@@ -84,7 +85,7 @@ class CommandProcessor(Processor):
     mendatory_keys = {'command'}
     optional_keys = {'environment'}
 
-    def on_change(self, config, event):
+    def on_change(self, config: CommandProcessorConfig, event: FileSystemEvent):
         cmd = config.command
         env = self._helper_merge_env(config, event)
         return self._helper_run(cmd, shell=True, env=env).returncode == 0
@@ -101,7 +102,7 @@ class InternaltestProcessor(Processor):
     def clear_history(self):
         self.history = []
 
-    def on_change(self, config, event):
+    def on_change(self, config: InternaltestProcessorConfig, event: FileSystemEvent):
         self.history.append(event)
         name = config.name
         print(f'<{name}>  event: {event.event_type}, path: {event.src_path}')
