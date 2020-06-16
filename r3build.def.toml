@@ -187,7 +187,7 @@ timeout.type = "int"
 timeout.default = 10
 timeout.description = """
 Timeout to stop the process.
-The processor try to kill it by SIGKILL after it exceeds the timeout.
+R3build try to kill it by SIGKILL after it exceeds the timeout.
 """
 
 quiet.type = "bool"
