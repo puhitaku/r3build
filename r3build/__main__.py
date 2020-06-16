@@ -32,7 +32,7 @@ def main(config, verbose, list_types):
         while True:
             time.sleep(999999)
     except KeyboardInterrupt:
-        return
+        r3.close()
 
 
 main()

@@ -23,9 +23,17 @@ class Processor:
         self._config = job_config
         self._prompter = prompter
 
-    def on_change(self, event):
+    def open(self):
+        """close is the start-up function that runs in the beginning of operation. Implementation is optional."""
+        pass
+
+    def on_change(self, event: FileSystemEvent):
         """on_change is the entrypoint for an incoming event. Derived classes must impelemnt it."""
         raise NotImplementedError
+
+    def close(self):
+        """close is the clean-up function that runs very before r3build exits. Implementation is optional."""
+        pass
 
     def _helper_run(self, cmd, **kwargs):
         if not self._root_config.log.job_output:
