@@ -46,6 +46,9 @@ class R3build:
         self.watcher = watcher.Watcher(self.config, Prompter(self.config))
 
     def run(self):
+        for job in self.config.job:
+            job.processor.open()
+
         # Register paths to watch
         paths = {job.path for job in self.config.job}
         for path in paths:
@@ -55,12 +58,16 @@ class R3build:
         def _invoke(event):
             accepted = False
             for job in self.config.job:
-                accepted |= job.launch(event)
+                accepted |= job.trigger(event)
             return accepted
 
         # Register callback and start asynchronous watcher
         self.watcher.callback = _invoke
         self.watcher.start()
+
+    def close(self):
+        for job in self.config.job:
+            job.processor.close()
 
     def get_job(self, name):
         for job in self.config.job:

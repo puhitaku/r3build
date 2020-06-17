@@ -1,5 +1,5 @@
 <div align="center">
-    <p><img width=500px src="./r3build.svg" alt="r3build logo"></p>
+    <p><img width=400px src="./r3build.svg" alt="r3build logo"></p>
     <h1>r3build, a smart file watcher</h1>
 
 [![CircleCI](https://circleci.com/gh/puhitaku/r3build.svg?style=svg)](https://circleci.com/gh/puhitaku/r3build) [![Coverage Status](https://coveralls.io/repos/github/puhitaku/r3build/badge.svg?branch=v1)](https://coveralls.io/github/puhitaku/r3build?branch=v1)
@@ -22,8 +22,11 @@ $ pip install r3build
 ```
 
 
-How to use (TL;DR)
-------------------
+How to use (Case 1: one-shot build)
+-----------------------------------
+
+The first one introduces a combination of simple event detection and a "one-shot" task.
+When you edit your code and save it, r3build invokes a make target detecting that file event.
 
 1. Write `r3build.toml` in your project directory.
 
@@ -66,6 +69,59 @@ $ python -m r3build
 ```
 
 3. Edit your code as you want, and enjoy them being built / run automatically.
+
+
+How to use (Case 2: auto-reloading)
+-----------------------------------
+
+Let me introduce "auto-reloading" use-case for the second one.
+
+Say you're building a great asynchronous system with [Celery](https://github.com/celery/celery/).
+While the most popular way to reload Celery is to use [watchdog](https://github.com/gorakhargosh/watchdog),
+r3build has advantages to it;
+
+ - No longer have to write one-liners and double-hyphens
+ - Manage all auto-reload tasks in one place
+
+Not only Celery, r3build is capable of restarting any process of course.
+
+1. Write `r3build.toml` in your project directory.
+
+```
+$ cat r3build.toml
+[[job]]
+name = "Run celery"
+type = "daemon"
+command = "celery worker --app=app.entrypoint"
+when = ["created", "modified"]
+regex = ".+\.py$"
+```
+
+This means that:
+ - r3build launches Celery as a child process
+ - When .py files are created or modified, restart already running Celery
+
+Suppressing std* is also available.
+
+```
+$ cat r3build.toml
+[[job]]
+name = "Run celery"
+type = "daemon"
+command = "celery worker --app=app.entrypoint"
+when = ["created", "modified"]
+regex = ".+\.py$"
+stdout = false
+stderr = true
+```
+
+2. Invoke r3build.
+
+```
+$ r3build
+```
+
+3. Watch it restart as you write code. Voila!
 
 
 How to use (verbose)
@@ -173,6 +229,11 @@ all = true
 We use [`re` package](https://docs.python.org/ja/3/library/re.html) for regex
 and [`fnmatchcase()` from `fnmatch` package](https://docs.python.org/ja/3/library/fnmatch.html#fnmatch.fnmatchcase)
 for glob. Please refer those documents.
+
+#### Q. Can I merge r3build.toml and pyproject.toml or any other TOML documents?
+
+Yes, it should be possible if the keys in document root don't collide with the another document.
+r3build doesn't care other than `log`, `event`, and `job` keys.
 
 Confirmed platforms
 -------------------

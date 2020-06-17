@@ -9,12 +9,15 @@ from typing import List
 
 from r3build.config_class import Log, Event, Processor, processors
 from r3build.config_validator import AccessValidator
-from r3build.processor import available_processors
+from r3build.processor import Processor as ProcessorParent, available_processors
 from r3build.prompter import Prompter
 
 
 class Job:
-    prompter: Prompter
+    _processor: ProcessorParent
+    _root_config: Config
+    _job_config: Processor
+    _prompter: Prompter
 
     def __init__(self, root_config: Config, prompter: Prompter, job_config: Processor):
         pid = job_config.type
@@ -22,10 +25,10 @@ class Job:
         if p is None:
             raise ValueError(f'Unknown processor: "{pid}"')
 
-        self._processor = p(root_config, prompter)
+        self._processor = p(root_config, job_config, prompter)
         self._root_config = root_config
         self._job_config = job_config
-        self.prompter = prompter
+        self._prompter = prompter
 
     """Common job properties"""
 
@@ -34,7 +37,7 @@ class Job:
         return self._job_config.name
 
     @property
-    def processor(self):
+    def processor(self) -> ProcessorParent:
         return self._processor
 
     @property
@@ -79,7 +82,7 @@ class Job:
     def regex_exclude(self):
         return self._job_config.regex_exclude
 
-    def launch(self, event):
+    def trigger(self, event):
         if self.glob and not self._filter_glob(self.glob, event):
             self._log_ignored_event(event)
             return False
@@ -97,30 +100,37 @@ class Job:
             return False
 
         if self._root_config.log.launched_events:
-            self.prompter.launch(self.name, event)
+            self._prompter.trigger(self.name, event)
 
         start = datetime.now()
-        result = self.processor.on_change(self._job_config, event)
+        result = self.processor.on_change(event)
         diff = datetime.now() - start
 
         info = []
 
-        if self._root_config.log.result:
-            mes = 'SUCCEEDED' if result else 'FAILED'
-            info.append(mes)
+        if result.message:
+            info.append(result.message)
+        else:
+            if self._root_config.log.result:
+                mes = 'SUCCEEDED' if result.success else 'FAILED'
+                info.append(mes)
 
-        if self._root_config.log.time:
-            h = floor(diff / timedelta(hours=1))
-            m = floor(diff / timedelta(minutes=1)) % 60
-            s = floor(diff / timedelta(seconds=1)) % 60
-            h = f'{h:02d}h' if h > 0 else ''
-            m = f'{m:02d}m' if m > 0 else ''
-            s = f'{s:02d}s'
-            info.append(f'took {h}{m}{s}')
+            if self._root_config.log.time:
+                h = floor(diff / timedelta(hours=1))
+                m = floor(diff / timedelta(minutes=1)) % 60
+                s = floor(diff / timedelta(seconds=1)) % 60
+                h = f'{h:02d}h' if h > 0 else ''
+                m = f'{m:02d}m' if m > 0 else ''
+                s = f'{s:02d}s'
+                info.append(f'took {h}{m}{s}')
 
         if info:
             info = ', '.join(info)
-            self.prompter.result(self.name, info, "green" if result else "red")
+            if result.color:
+                color = result.color
+            else:
+                color = "green" if result.success else "red"
+            self._prompter.result(self.name, info, color)
 
         return True
 
@@ -145,7 +155,7 @@ class Job:
 
     def _log_ignored_event(self, event):
         if self._root_config.log.ignored_events:
-            self.prompter.ignore(self.name, "patterns don't match", event)
+            self._prompter.ignore(self.name, "patterns don't match", event)
 
     @staticmethod
     @lru_cache(typed=True)

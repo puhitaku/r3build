@@ -53,7 +53,7 @@ class Processor(AccessValidator):
     regex_exclude: Union[List[str], str] = ""
 
 
-class ProcMake(Processor):
+class MakeProcessorConfig(Processor):
     _slots = Processor._slots.union({"directory", "environment", "jobs", "target"})
     _required = Processor._required.union(set())
     target: str = ""
@@ -62,27 +62,41 @@ class ProcMake(Processor):
     directory: str = ""
 
 
-class ProcCommand(Processor):
+class CommandProcessorConfig(Processor):
     _slots = Processor._slots.union({"command", "environment"})
     _required = Processor._required.union({"command"})
     command: str = ""
     environment: Dict[str, str] = ""
 
 
-class ProcPytest(Processor):
+class DaemonProcessorConfig(Processor):
+    _slots = Processor._slots.union(
+        {"command", "environment", "signal", "stderr", "stdout", "timeout"}
+    )
+    _required = Processor._required.union({"command"})
+    command: str = ""
+    signal: Union[int, str] = "SIGINT"
+    timeout: int = 10
+    stdout: bool = True
+    stderr: bool = True
+    environment: Dict[str, str] = ""
+
+
+class PytestProcessorConfig(Processor):
     _slots = Processor._slots.union({"target"})
     _required = Processor._required.union({"target"})
     target: str = ""
 
 
-class ProcInternaltest(Processor):
+class InternaltestProcessorConfig(Processor):
     _slots = Processor._slots.union({})
     _required = Processor._required.union(set())
 
 
 processors = {
-    "make": ProcMake,
-    "command": ProcCommand,
-    "pytest": ProcPytest,
-    "internaltest": ProcInternaltest,
+    "make": MakeProcessorConfig,
+    "command": CommandProcessorConfig,
+    "daemon": DaemonProcessorConfig,
+    "pytest": PytestProcessorConfig,
+    "internaltest": InternaltestProcessorConfig,
 }
