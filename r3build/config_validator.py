@@ -15,7 +15,9 @@ class AccessValidator:
         ks = set(kv.keys())
         if hasattr(self, '_required') and not self._required.issubset(ks):
             lacks = self._required - ks
-            raise ValueError(f"Section {sec} lacks required keys: {', '.join(lacks)}", )
+            raise ValueError(
+                f"Section {sec} lacks required keys: {', '.join(lacks)}",
+            )
 
         for k, v in kv.items():
             setattr(self, k, v)
@@ -64,8 +66,13 @@ class AccessValidator:
         if t_origin == list:
             return all(cls._type_check(v, t_args[0]) for v in value)
         elif t_origin == dict:
-            return all(cls._type_check(k, t_args[0]) and cls._type_check(v, t_args[1]) for k, v in value.items())
+            return all(
+                cls._type_check(k, t_args[0]) and cls._type_check(v, t_args[1])
+                for k, v in value.items()
+            )
         elif t_origin == Union:
             return any(cls._type_check(value, t) for t in t_args)
         else:
-            raise TypeError(f'Unexpected type(s) for comparison: value_typ={value_typ}, expect_typ={expect_typ}')
+            raise TypeError(
+                f'Unexpected type(s) for comparison: value_typ={value_typ}, expect_typ={expect_typ}'
+            )

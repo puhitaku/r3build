@@ -35,7 +35,7 @@ def test_recursive_validation():
     m.environment = {'foo': '1'}
 
     with pytest.raises(TypeError):
-        m.environment = {0xf00: '1'}
+        m.environment = {0xF00: '1'}
 
     with pytest.raises(TypeError):
         m.environment = 'I AM A DICT!!!!!'

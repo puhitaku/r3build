@@ -56,7 +56,7 @@ def instance(tmp):
             'command': f'python3 {tmp / "app.py"}',
             'stdout': False,
             'stderr': False,
-        }
+        },
     ]
     log = {
         'all': True,
@@ -86,12 +86,16 @@ def write(path):
 
 def gen_daemon(path):
     with open(path / 'app.py', 'w') as f:
-        f.write(dedent(f"""
+        f.write(
+            dedent(
+                f"""
             import time
             print('Daemon has started! nonce={randint(0, 10000)}')
             for i in range(100):
                 time.sleep(1)
-        """))
+        """
+            )
+        )
 
 
 def test_config():
@@ -102,18 +106,10 @@ def test_config():
         R3build(config_dict={'log': {}})
 
     with pytest.raises(ValueError):  # lack processor
-        R3build(config_dict={
-            'job': [
-                {}
-            ]
-        })
+        R3build(config_dict={'job': [{}]})
 
     with pytest.raises(ValueError):  # unknown processor
-        R3build(config_dict={
-            'job': [
-                {'type': 'sugoiprocessor'}
-            ]
-        })
+        R3build(config_dict={'job': [{'type': 'sugoiprocessor'}]})
 
 
 def test_glob1(instance, tmp):

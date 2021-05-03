@@ -177,11 +177,13 @@ class Config(AccessValidator):
     def __init__(self, raw_dict):
         # SUPER dirty hack ...
         self.__annotations__['Log'] = Log
-        self.__annotations__.update({
-            'log': Log,
-            'event': Event,
-            'job': List[Job],
-        })
+        self.__annotations__.update(
+            {
+                'log': Log,
+                'event': Event,
+                'job': List[Job],
+            }
+        )
 
         super().__init__('root', dict())
         self.log = Log('log', raw_dict.get('log', dict()))
@@ -200,7 +202,9 @@ class Config(AccessValidator):
         for job_def in raw_dict.get('job', []):
             proc = job_def.get('type', None)
             if proc is None:
-                raise ValueError(f'The job definition "{job_def.get("name", "(noname)")}" lacks "type" key')
+                raise ValueError(
+                    f'The job definition "{job_def.get("name", "(noname)")}" lacks "type" key'
+                )
             elif proc not in processors:
                 raise ValueError(f'Unknown processor: "{proc}"')
 

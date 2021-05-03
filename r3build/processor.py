@@ -52,11 +52,13 @@ class Processor:
     def _helper_merge_env(config, event: FileSystemEvent):
         env = os.environ
         env.update(config.environment)
-        env.update({
-            'R3_EVENT': event.event_type,
-            'R3_FILENAME': event.src_path,
-            'R3_IS_DIRECTORY': '1' if event.is_directory else '0',
-        })
+        env.update(
+            {
+                'R3_EVENT': event.event_type,
+                'R3_FILENAME': event.src_path,
+                'R3_IS_DIRECTORY': '1' if event.is_directory else '0',
+            }
+        )
         return env
 
 
@@ -221,6 +223,7 @@ class DaemonProcessor(Processor):
                 self.acc += self.d
                 self.d *= 2
                 return ret
+
         return Backoff(0.1, timeout)
 
 
