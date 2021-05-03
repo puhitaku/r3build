@@ -18,6 +18,9 @@ jobs:
       - run:
           name: Coveralls
           command: python -m coveralls
+      - run:
+          name: Black check
+          command: black --check .
 
 workflows:
   version: 2

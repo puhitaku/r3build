@@ -1,9 +1,30 @@
-.PHONY:
+.PHONY: black-check black \
+        clean distclean \
+		build \
+		deploytest deploy \
+		watch \
+		generate_skeleton generate_class_definition
+
+black-check:
+	@black --check -t py38 -S .
+
 black:
 	@black -t py38 -S .
 
 clean:
 	@rm -r $$(find . | grep pyc)
+
+distclean:
+	@rm -rf dist
+
+build:
+	python setup.py sdist
+
+deploytest:
+	twine upload --repository testpypi dist/*
+
+deploy:
+	twine upload --repository pypi dist/*
 
 watch:
 	@r3build
