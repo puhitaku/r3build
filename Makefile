@@ -6,10 +6,10 @@
 		generate_skeleton generate_class_definition
 
 black-check:
-	@black --check -t py38 -S .
+	@black --check -t py38 -l 100 -S .
 
 black:
-	@black -t py38 -S .
+	@black -t py38 -l 100 -S .
 
 clean:
 	@rm -r $$(find . | grep pyc)
