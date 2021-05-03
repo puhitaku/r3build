@@ -20,7 +20,7 @@ jobs:
           command: python -m coveralls
       - run:
           name: Black check
-          command: black --check .
+          command: make black-check
 
 workflows:
   version: 2
