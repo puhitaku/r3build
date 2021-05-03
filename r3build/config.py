@@ -58,8 +58,9 @@ class Job:
             # If the pattern is absolute or starts with the job path, return as-is
             return g
 
-        # The pattern seems to be relative, add job path
-        return str(Path(self.path) / g)
+        # The pattern seems to be relative, add job path, and make it absolute
+        path = str((Path(self.path) / g).absolute())
+        return path
 
     @property
     def glob(self):
@@ -139,8 +140,10 @@ class Job:
 
     def _filter_glob(self, pattern, event):
         if isinstance(pattern, list):
-            return any(fnmatchcase(event.src_path, p) for p in pattern)
-        return fnmatchcase(event.src_path, pattern)
+            abspath = str(Path(event.src_path).absolute())
+            return any(fnmatchcase(abspath, str(Path(p).absolute())) for p in pattern)
+        abspath = str(Path(event.src_path).absolute())
+        return fnmatchcase(abspath, str(Path(pattern).absolute()))
 
     def _filter_regex(self, pattern, event):
         if isinstance(pattern, list):
