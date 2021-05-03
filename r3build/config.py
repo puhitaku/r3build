@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from fnmatch import fnmatchcase
 from functools import lru_cache
 from math import floor
+from pathlib import Path
 from typing import List
 
 from r3build.config_class import Log, Event, Processor, processors
@@ -58,7 +59,7 @@ class Job:
             return g
 
         # The pattern seems to be relative, add job path
-        return f'{self.path}/{g}'
+        return str(Path(self.path) / g)
 
     @property
     def glob(self):
